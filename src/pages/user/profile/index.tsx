@@ -381,27 +381,27 @@ export default function Profile() {
           <img src={SeeImg} alt="" />
           <span>SEE</span>
         </TitleLft>
-        {
-          !claimed && <RhtBoxB >
-            <div className="flexLine">
-              <button onClick={()=>handleClaim()} className="claimBtn" disabled={!Number(claimAmount)} >
-                <DollarSign size={16} /> <span>{t('see.claim')} {claimAmount} SEE</span></button>
-              <div> {t('see.timeBefore',{time:dayjs('2026.1.11 00:00:00 UTC+8').format("YYYY-MM-DD HH:mm:ss")})}</div>
-            </div>
-          </RhtBoxB>
-        }
+        {/*{*/}
+        {/*  !claimed && <RhtBoxB >*/}
+        {/*    <div className="flexLine">*/}
+        {/*      <button onClick={()=>handleClaim()} className="claimBtn" disabled={!Number(claimAmount)} >*/}
+        {/*        <DollarSign size={16} /> <span>{t('see.claim')} {claimAmount} SEE</span></button>*/}
+        {/*      <div> {t('see.timeBefore',{time:dayjs('2026.1.11 00:00:00 UTC+8').format("YYYY-MM-DD HH:mm:ss")})}</div>*/}
+        {/*    </div>*/}
+        {/*  </RhtBoxB>*/}
+        {/*}*/}
         {
           claimed &&   <RhtBoxB>
             <div className="flexLine">
               <div className="flexItem">
                 <span>{detail?.see?.amount} SEE</span>
-                <button onClick={()=>setShowTransfer(true)} ><Send size={16} />{t('see.transfer')}</button>
-                <button onClick={()=>setShowReceive(true)}><Download size={16} />{t('see.receive')}</button>
+                {/*<button onClick={()=>setShowTransfer(true)} ><Send size={16} />{t('see.transfer')}</button>*/}
+                {/*<button onClick={()=>setShowReceive(true)}><Download size={16} />{t('see.receive')}</button>*/}
 
               </div>
-              <div className="history" onClick={()=>setShowHistory(!showHistory)}>{t('see.record')} {showHistory ? <ChevronUp
-                size={14} />:<ChevronDown
-                size={14} />}</div>
+              {/*<div className="history" onClick={()=>setShowHistory(!showHistory)}>{t('see.record')} {showHistory ? <ChevronUp*/}
+              {/*  size={14} />:<ChevronDown*/}
+              {/*  size={14} />}</div>*/}
             </div>
           </RhtBoxB>
         }
