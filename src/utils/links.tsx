@@ -16,6 +16,7 @@ import EchoImg from '../assets/Imgs/home/echo.svg';
 import CreditImg from '../assets/Imgs/home/credit.jpg';
 import SNSQueryImg from "../assets/Imgs/snsquery.png";
 import AiImg from "../assets/Imgs/ai.jpeg";
+import DefaultImg from "../assets/Imgs/defaultLogo.png";
 
 
 import RImg1 from '../assets/Imgs/resources/1.png';
@@ -305,6 +306,13 @@ const links = {
     // },
   ],
   apps: [
+    {
+      id: 'claim',
+      name: 'apps.claim',
+      link: 'https://claim.seedao.xyz/',
+      icon: DefaultImg,
+      desc: 'apps.claimDesc',
+    },
     {
       id: 'module-ai',
       name: 'apps.chatAI',

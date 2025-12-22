@@ -705,7 +705,9 @@
     "podcastDesc": "SeeTalk is a Web3 podcast collaboratively created by members of the SeeDAO community, showcasing the emerging collaborations within the community and highlighting SeeDAO's ongoing important work and plans.",
     "whitePaper": "whitePaper",
     "chatAI": "SeeChat",
-    "chatAITips": "Web version of SeeChat (DeepSeek + SeeDAO Knowledge Base), we can chat with AI now!"
+    "chatAITips": "Web version of SeeChat (DeepSeek + SeeDAO Knowledge Base), we can chat with AI now!",
+    "claim": "Claim USDT",
+    "claimDesc": "Convert SCR to USDT"
   },
   "SNS": {
     "EntranceTitle": "INVOLVED IN SEEDAO IN YOUR NAME",
