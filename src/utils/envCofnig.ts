@@ -70,7 +70,7 @@ const Sepolia_Network = {
 };
 
 const LOCAL = {
-  REACT_APP_BASE_ENDPOINT: 'https://test-api.seedao.tech',
+  REACT_APP_BASE_ENDPOINT: process.env.REACT_APP_BASE_ENDPOINT || 'https://test-api.seedao.tech',
   REACT_APP_PUSH_ENDPOINT: 'https://test-push-api.seedao.tech',
   REACT_APP_MOBILE_URL: 'preview-m.seedao.tech',
   REACT_APP_MOBILE_OPEN: true,
@@ -119,7 +119,7 @@ const PREVIEW = {
 
 const PRODUCTION = {
   ...LOCAL,
-  REACT_APP_BASE_ENDPOINT: 'https://api.seedao.tech',
+  REACT_APP_BASE_ENDPOINT: 'https://api.seedao.top',
   REACT_APP_PUSH_ENDPOINT: 'https://push-api.seedao.tech',
   REACT_APP_JOYID_ENABLE: true,
   REACT_APP_APP_VERSION: `B ${VERSION}`,
