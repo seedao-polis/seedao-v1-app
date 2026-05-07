@@ -125,7 +125,7 @@ const PRODUCTION = {
   REACT_APP_APP_VERSION: `B ${VERSION}`,
   REACT_APP_THEME_ENABLE: false,
   REACT_APP_ONESIGNAL_ID: '8ecd086b-3e15-4537-9f8b-c55c72a8dcf7',
-  REACT_APP_MOBILE_URL: 'https://m.seedao.xyz',
+  REACT_APP_MOBILE_URL: 'https://m.seedao.top',
   JOY_ID_URL: 'https://app.joy.id',
   // NETWORK: {
   //   // [TODO] when publish sns contract, change to mainnet
