@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import BackerNav from '../../components/common/backNav';
 import { applySBT, getContracts, getSBTlist } from "../../requests/cityHall";
 import publicJs from 'utils/publicJs';
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 
 import SeeSelect from "../../components/common/select";
 import CopyBox from "../../components/copy";

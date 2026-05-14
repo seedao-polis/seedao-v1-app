@@ -4,7 +4,7 @@ import { IPushDisplay } from "../../type/push.type";
 import React, { useEffect, useState } from "react";
 import { getPublicityDetail } from "../../requests/publicity";
 import { formatTime } from "../../utils/time";
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 import getConfig from "../../utils/envCofnig";
 import { MdPreview } from "md-editor-rt";
 import { AppActionType, useAuthContext } from "../../providers/authProvider";

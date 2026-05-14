@@ -12,7 +12,7 @@ import CameraIconSVG from 'components/svgs/camera';
 import BackerNav from 'components/common/backNav';
 import SeeSelect from 'components/common/select';
 import { ethers } from 'ethers';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { compressionFile, fileToDataURL } from 'utils/image';
 import DatePickerStyle from 'components/datePicker';

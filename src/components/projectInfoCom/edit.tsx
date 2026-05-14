@@ -8,7 +8,7 @@ import useToast, { ToastType } from 'hooks/useToast';
 import CameraIconSVG from 'components/svgs/camera';
 import { useNavigate } from 'react-router-dom';
 import { compressionFile, fileToDataURL } from 'utils/image';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { ethers } from 'ethers';
 import { UpdateProjectParamsType, updateProjectInfo } from 'requests/project';

@@ -13,7 +13,7 @@ import { PermissionObject, PermissionAction } from 'utils/constant';
 import { useAuthContext, AppActionType } from 'providers/authProvider';
 import SearchWhite from 'assets/Imgs/light/search.svg';
 import SearchImg from 'assets/Imgs/light/search.svg';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { ethers } from 'ethers';
 import useToast, { ToastType } from 'hooks/useToast';

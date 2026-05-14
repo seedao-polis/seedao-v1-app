@@ -4,7 +4,7 @@ import LearnDashboard from 'components/newcomer/learn';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';

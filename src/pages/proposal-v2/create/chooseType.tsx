@@ -15,7 +15,7 @@ import usePermission from 'hooks/usePermission';
 import { PermissionAction, PermissionObject } from 'utils/constant';
 import requests from '../../../requests';
 import { getCloseProposal } from '../../../requests/proposalV2';
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 
 import { useNavigate } from "react-router-dom";
 import getConfig from "../../../utils/envCofnig";

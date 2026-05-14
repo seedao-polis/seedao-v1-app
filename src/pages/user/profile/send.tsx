@@ -7,7 +7,7 @@ import {ScanLine,X} from "lucide-react";
 import QrScanner from "./scan";
 import { transferSEE } from "../../../requests/see";
 import useToast, { ToastType } from "../../../hooks/useToast";
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 import getConfig from "../../../utils/envCofnig";
 
 const Box = styled(BasicModal)`

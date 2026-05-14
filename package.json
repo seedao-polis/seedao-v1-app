@@ -10,7 +10,7 @@
     "@joyid/wagmi": "^0.1.0",
     "@lucide/lab": "^0.1.2",
     "@seedao/see-auth": "^0.1.14",
-    "@seedao/sns-js": "^0.8.0",
+    "@seedao2.0/sns-js": "^0.3.1",
     "@sentry/cli": "^2.23.1",
     "@sentry/react": "^7.91.0",
     "@taoist-labs/components": "^0.3.17",
@@ -108,6 +108,13 @@
     "react-app-rewired": "^2.2.1",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0"
+  },
+  "overrides": {
+    "@seedao/sns-js": "npm:@seedao2.0/sns-js@^0.3.1"
+  },
+  "pnpm": {
+    "strict-peer-dependencies": false,
+    "shamefully-hoist": true
   },
   "scripts": {
     "test": "echo \"no test specified\"",

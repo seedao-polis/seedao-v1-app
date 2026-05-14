@@ -5,7 +5,7 @@ import { IApplicationDisplay } from "../../type/application.type";
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { ToastType } from "../../hooks/useToast";
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 
 import { AppActionType, useAuthContext } from "../../providers/authProvider";
 import LoadingImg from "../../assets/Imgs/loading.png";

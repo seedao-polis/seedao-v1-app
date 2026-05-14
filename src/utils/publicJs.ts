@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
-import sns from "@seedao/sns-js";
+import sns from "@seedao2.0/sns-js";
 import getConfig from "./envCofnig";
 
 const AddressToShow = (address: string, num?: number) => {

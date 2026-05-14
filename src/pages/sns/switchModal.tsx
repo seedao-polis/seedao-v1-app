@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import { ethers } from 'ethers';
-import { builtin } from '@seedao/sns-js';
+import { builtin } from '@seedao2.0/sns-js';
 import ABI from 'assets/abi/SeeDAORegistrarController.json';
 import useToast, { ToastType } from 'hooks/useToast';
 import getConfig from 'utils/envCofnig';

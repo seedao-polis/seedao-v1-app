@@ -1,4 +1,4 @@
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { useEffect, useState } from 'react';
 import getConfig from "../utils/envCofnig";

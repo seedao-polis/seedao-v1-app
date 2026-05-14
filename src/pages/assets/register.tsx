@@ -13,7 +13,7 @@ import Select from 'components/common/select';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { ethers } from 'ethers';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { AssetName } from 'utils/constant';
 import { getAvailiableProjectsAndGuilds } from 'requests/applications';

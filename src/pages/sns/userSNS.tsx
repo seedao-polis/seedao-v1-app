@@ -5,7 +5,7 @@ import BackerNav from 'components/common/backNav';
 import { ContainerPadding } from 'assets/styles/global';
 import { PrimaryOutlinedButton } from 'components/common/button';
 import SwitchModal from './switchModal';
-import sns, { builtin } from '@seedao/sns-js';
+import sns, { builtin } from '@seedao2.0/sns-js';
 import { useAuthContext } from 'providers/authProvider';
 import LoadingImg from 'assets/Imgs/loading.png';
 import NoItem from 'components/noItem';

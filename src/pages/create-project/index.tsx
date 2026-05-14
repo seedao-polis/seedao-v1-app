@@ -16,7 +16,7 @@ import MarkdownEditor from 'components/common/markdownEditor';
 import SeeSelect from 'components/common/select';
 import { UserRole } from 'type/user.type';
 import { ethers } from 'ethers';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { BlackButton } from 'components/common/button';
 import { compressionFile, fileToDataURL } from 'utils/image';

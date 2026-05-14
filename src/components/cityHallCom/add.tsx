@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 import useToast, { ToastType } from 'hooks/useToast';
 import { updateMembers, MemberGroupType } from 'requests/cityHall';
 import BasicModal from 'components/modals/basicModal';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import PlusMinusButton from 'components/common/plusAndMinusButton';
 import SeeSelect from 'components/common/select';

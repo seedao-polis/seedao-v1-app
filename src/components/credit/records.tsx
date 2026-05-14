@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import StateTag from './stateTag';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import useToast, { ToastType } from 'hooks/useToast';
-import sns from '@seedao/sns-js';
+import sns from '@seedao2.0/sns-js';
 
 import { ethers } from 'ethers';
 import Select from './select';
