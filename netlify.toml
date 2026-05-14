@@ -1,0 +1,12 @@
+# CRA / react-app-rewired 在 Netlify 默认构建机上容易 OOM（日志里 “exited too early”）。
+# 以下通过环境变量降低 webpack 构建峰值内存。
+
+[build]
+  command = "npm run build:prod"
+  publish = "build"
+
+[build.environment]
+  # 提高 V8 老生代堆上限（单位 MB）；可按计划档位再调 4096 / 8192
+  NODE_OPTIONS = "--max-old-space-size=6144"
+  # 关闭 production source map，显著减少构建期内存与耗时
+  GENERATE_SOURCEMAP = "false"
