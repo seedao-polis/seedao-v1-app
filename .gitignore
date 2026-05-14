@@ -65,6 +65,8 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+# 本仓库 Netlify 以 npm + package-lock 为准；本地 pnpm 生成的锁勿提交
+pnpm-lock.yaml
 .idea
 _static
 build

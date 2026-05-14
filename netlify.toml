@@ -6,6 +6,8 @@
   publish = "build"
 
 [build.environment]
+  # 默认镜像对 @seedao2.0/* 常 404；安装阶段统一走 npm 官方源（与 package-lock 中 resolved 一致）
+  NPM_CONFIG_REGISTRY = "https://registry.npmjs.org/"
   # 提高 V8 老生代堆上限（单位 MB）；可按计划档位再调 4096 / 8192
   NODE_OPTIONS = "--max-old-space-size=6144"
   # 关闭 production source map，显著减少构建期内存与耗时
