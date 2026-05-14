@@ -113,7 +113,7 @@ const PREVIEW = {
       scoreLendContract: '0xcF5504045f74f6A51828B9D8766E4d96822311dE',
     },
   },
-  INDEXER_ENDPOINT: 'https://preview-spp-indexer.seedao.tech',
+  INDEXER_ENDPOINT: 'https://spp-indexer.seedao.top',
   SBT_BASEURL:"https://preview-sbt-api.seedao.tech"
 };
 
@@ -153,7 +153,7 @@ const PRODUCTION = {
       },
     },
   },
-  INDEXER_ENDPOINT: 'https://spp-indexer.seedao.tech',
+  INDEXER_ENDPOINT: 'https://spp-indexer.seedao.top',
   SENTRY_DSN,
   SBT_BASEURL:"https://sbt-api.seedao.tech"
 };
