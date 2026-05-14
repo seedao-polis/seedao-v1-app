@@ -16,4 +16,11 @@ const handleFallback = () => (config) => {
   config.resolve.fallback = fallback;
   return config;
 };
-module.exports = override(handleFallback());
+
+/** 依赖包内 source map 指向未发布的 .ts/.map，source-map-loader 会刷屏；不影响运行 */
+const ignoreBrokenSourceMaps = () => (config) => {
+  config.ignoreWarnings = [...(config.ignoreWarnings || []), /Failed to parse source map/];
+  return config;
+};
+
+module.exports = override(handleFallback(), ignoreBrokenSourceMaps());

@@ -10,3 +10,5 @@
   NODE_OPTIONS = "--max-old-space-size=6144"
   # 关闭 production source map，显著减少构建期内存与耗时
   GENERATE_SOURCEMAP = "false"
+  # Netlify 会设 CI=true，CRA 会把 ESLint warning 当 error 导致失败；生产构建跳过 ESLint 插件
+  DISABLE_ESLINT_PLUGIN = "true"
