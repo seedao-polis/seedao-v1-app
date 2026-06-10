@@ -18,9 +18,8 @@ import publicJs from 'utils/publicJs';
 import Pagination from 'components/pagination';
 import SearchImg from '../../assets/Imgs/proposal/search.svg';
 import AddImg from '../../assets/Imgs/proposal/add-square.svg';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
 import MyProposalsTab from 'components/proposalCom/myProposalsTab';
-import { useNetwork } from "wagmi";
 import useToast, { ToastType } from "../../hooks/useToast";
 import { SEEDAO_USER } from "../../utils/constant";
 
@@ -33,7 +32,7 @@ export default function ProposalIndexPage() {
   const { showToast } = useToast();
   const { t } = useTranslation();
   const {
-    state: { loading,metaforoToken,account, userData },
+    state: { loading, account, userData },
     dispatch,
   } = useAuthContext();
   const proposalCategories = useProposalCategories();
@@ -77,8 +76,7 @@ export default function ProposalIndexPage() {
   const [currentTab, setCurrentTab] = useState(state?.currentTab?.[0] || TabType.All);
   const secondTab = state?.currentTab?.[1];
 
-  const { checkMetaforoLogin } = useCheckMetaforoLogin();
-  const { chain } = useNetwork();
+  const { ensureWalletLogin, isLogin } = useWalletAuth();
   const { getMultiSNS } = useQuerySNS();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -92,14 +90,6 @@ export default function ProposalIndexPage() {
   const page_addr = searchParams.get('page');
   const category_id = searchParams.get('category_id');
   const status_addr = searchParams.get('status');
-
-  useEffect(() => {
-    if(metaforoToken || !account || !userData || !chain)return;
-    getMetaforo()
-  }, [metaforoToken,account,userData,chain]);
-  const getMetaforo = async()=>{
-    await checkMetaforoLogin();
-  }
 
   useEffect(() => {
     if (!searchParams.size) return;
@@ -166,10 +156,8 @@ export default function ProposalIndexPage() {
   const tokenstr = localStorage.getItem(SEEDAO_USER);
 
   useEffect(() => {
-    // if(metaforoToken === undefined) return;
-
     getProposalList(page);
-  }, [selectCategory, selectTime, selectStatus, searchKeyword, isFilterSIP, page,metaforoToken,tokenstr]);
+  }, [selectCategory, selectTime, selectStatus, searchKeyword, isFilterSIP, page, tokenstr, isLogin]);
 
   const onKeyUp = (e: any) => {
     if (e.keyCode === 13) {
@@ -194,21 +182,21 @@ export default function ProposalIndexPage() {
   };
 
   const handleClickHistory = async () => {
-    const canOpen = await checkMetaforoLogin();
+    const canOpen = await ensureWalletLogin();
     if (canOpen) {
       setCurrentTab(TabType.History);
     }
   };
 
   const handleClickMyProposals = async () => {
-    const canOpen = await checkMetaforoLogin();
+    const canOpen = await ensureWalletLogin();
     if (canOpen) {
       setCurrentTab(TabType.My);
     }
   };
 
   const go2create = async () => {
-    const canCreate = await checkMetaforoLogin();
+    const canCreate = await ensureWalletLogin();
     if (canCreate) {
       navigate('/proposal/create');
     }
@@ -288,7 +276,7 @@ export default function ProposalIndexPage() {
               <SimpleProposalItem
                 key={p.id}
                 data={p}
-                metaforoToken={metaforoToken}
+                isLogin={isLogin}
                 sns={formatSNS(p.applicant?.toLocaleLowerCase())}
                 currentTab={[currentTab]}
               />

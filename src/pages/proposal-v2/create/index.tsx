@@ -9,6 +9,7 @@ import { useCreateProposalContext } from './store';
 import { useEffect } from 'react';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import { getTemplates } from 'requests/proposalV2';
+import { applyLocalProposalPermBypass } from 'utils/proposalDev';
 import useToast, { ToastType } from "../../../hooks/useToast";
 
 const CreateProposalSteps = () => {
@@ -16,25 +17,19 @@ const CreateProposalSteps = () => {
   const { currentStep, proposalType, goBackStepOne } = useCreateProposalContext();
   const { showToast } = useToast();
 
-  const {
-    dispatch,
-    state: { metaforoToken },
-  } = useAuthContext();
+  const { dispatch } = useAuthContext();
 
   useEffect(() => {
-    console.log('metaforoToken: ', metaforoToken);
-    if (!metaforoToken) {
-      return;
-    }
     dispatch({ type: AppActionType.SET_LOADING, payload: true });
 
     getTemplates()
       .then((resp) => {
-        const list = resp?.data || [];
+        let list = resp?.data || [];
         list.sort((a, b) => a.category_display_index - b.category_display_index || 0);
         list.forEach((item) => {
           item.templates.sort((a, b) => (a.display_index || 0) - (b.display_index || 0));
         });
+        list = applyLocalProposalPermBypass(list);
         dispatch({ type: AppActionType.SET_CATEGORIES_TEMPLATES, payload: list });
       })
       .catch((error:any) => {
@@ -44,7 +39,7 @@ const CreateProposalSteps = () => {
       .finally(() => {
         dispatch({ type: AppActionType.SET_LOADING, payload: false });
       });
-  }, [metaforoToken]);
+  }, []);
 
   const showstep = () => {
     switch (currentStep) {

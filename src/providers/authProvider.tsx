@@ -8,7 +8,6 @@ import {
   SEEDAO_USER,
   SEEDAO_USER_DATA,
   SENDING_ME_USER,
-  METAFORO_TOKEN,
   SEE_AUTH,
 } from '../utils/constant';
 import { WalletType } from '../wallet/wallet';
@@ -34,8 +33,6 @@ interface IState {
   hadOnboarding?: boolean;
   currentSeason: string;
   rpc?: string;
-  metaforoToken?: string;
-  show_metaforo_login?: boolean;
   deschoolToken?: string;
   userMap: Map<string, any>;
   sbtToken:string;
@@ -62,8 +59,6 @@ export enum AppActionType {
   SET_SNS = 'set_sns',
   SET_HAD_ONBOARDING = 'set_had_onboarding',
   SET_CURRENT_SEASON = 'set_current_season',
-  SET_METAFORO_TOKEN = 'set_metaforo_token',
-  SET_SHOW_METAFORO_LOGIN_MODAL = 'set_show_metaforo_login_modal',
   SET_THIRD_PARTY_TOKEN = 'set_third_party_token',
   SET_USER_MAP = 'set_user_map',
   SET_SBT_TOKEN = 'set_sbt_token',
@@ -136,7 +131,6 @@ const reducer = (state: IState, action: IAction): IState => {
     case AppActionType.CLEAR_AUTH:
       localStorage.removeItem(SEEDAO_USER);
       localStorage.removeItem(SENDING_ME_USER);
-      localStorage.removeItem(METAFORO_TOKEN);
       localStorage.removeItem(SEE_AUTH);
       return {
         ...state,
@@ -144,7 +138,6 @@ const reducer = (state: IState, action: IAction): IState => {
         userData: undefined,
         wallet_type: undefined,
         authorizer: undefined,
-        metaforoToken: undefined,
       };
     case AppActionType.SET_PROPOSAL_CATEGORIES:
       return { ...state, proposal_categories: action.payload };
@@ -182,14 +175,9 @@ const reducer = (state: IState, action: IAction): IState => {
       return { ...state, hadOnboarding: action.payload };
     case AppActionType.SET_CURRENT_SEASON:
       return { ...state, currentSeason: action.payload };
-    case AppActionType.SET_METAFORO_TOKEN:
-      return { ...state, metaforoToken: action.payload };
     case AppActionType.SET_THIRD_PARTY_TOKEN:
       localStorage.setItem(SEE_AUTH, JSON.stringify(action.payload));
-      localStorage.setItem(METAFORO_TOKEN,JSON.stringify(action.payload?.metaforo));
-      return { ...state, deschoolToken: action.payload?.deschool, metaforoToken: action.payload?.metaforo };
-    case AppActionType.SET_SHOW_METAFORO_LOGIN_MODAL:
-      return { ...state, show_metaforo_login: action.payload };
+      return { ...state, deschoolToken: action.payload?.deschool };
     case AppActionType.SET_USER_MAP:
       return { ...state, userMap: action.payload };
 

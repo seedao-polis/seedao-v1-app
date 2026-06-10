@@ -5,7 +5,8 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { MdEditor } from 'md-editor-rt';
 import { saveOrSubmitProposal, UploadPictures } from 'requests/proposalV2';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
+import { formatApiError } from 'utils/formatApiError';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'react-bootstrap';
@@ -210,7 +211,7 @@ export default function CreateStep({ onClick }: any) {
     dispatch,
   } = useAuthContext();
 
-  const { checkMetaforoLogin } = useCheckMetaforoLogin();
+  const { ensureWalletLogin } = useWalletAuth();
   const [isInstantVoteAlertVisible, setIsInstantVoteAlertVisible] = useState(false);
 
   useEffect(() => {
@@ -430,7 +431,7 @@ export default function CreateStep({ onClick }: any) {
 
     setLoading(true);
 
-    const canSubmit = await checkMetaforoLogin();
+    const canSubmit = await ensureWalletLogin();
     if (canSubmit) {
       let holderNew: any[] = [];
       if (holder.length) {
@@ -458,23 +459,28 @@ export default function CreateStep({ onClick }: any) {
         components: data,
         template_id: template?.id,
         create_project_proposal_id: extraData?.id,
-        submit_to_metaforo: submitType === 'submit',
+        submit: submitType === 'submit',
       })
         .then((r) => {
+          const proposalId = r.data?.id;
+          if (!proposalId) {
+            showToast(formatApiError(r), ToastType.Danger);
+            return;
+          }
           showToast(
             submitType === 'submit' ? t('Msg.SubmitProposalSuccess') : t('Msg.SaveProposalSuccess'),
             ToastType.Success,
           );
-          navigate(`/proposal/thread/${r.data.id}`);
+          navigate(`/proposal/thread/${proposalId}`);
         })
         .catch((error: any) => {
           logError('saveOrSubmitProposal failed', error);
-          if((error?.data?.msg || error?.code || error).indexOf("component data validation error") > -1 || (error?.data?.msg || error?.code || error).indexOf("invalid address")>-1 ) {
+          const errText = formatApiError(error?.data ?? error);
+          if (errText.includes('component data validation error') || errText.includes('invalid address')) {
             showToast(t('Proposal.invalidAddress'), ToastType.Danger);
-          }else{
-            showToast(error?.data?.msg || error?.code || error, ToastType.Danger);
+          } else {
+            showToast(errText, ToastType.Danger);
           }
-
         })
         .finally(() => {
           dispatch({ type: AppActionType.SET_LOADING, payload: false });

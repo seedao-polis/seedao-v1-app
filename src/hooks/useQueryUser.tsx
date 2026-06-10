@@ -14,13 +14,12 @@ export default function useQueryUser() {
     const _userMap = new Map(userMap);
     if (_to_be_queried.length) {
       try {
-        requests.user.getUsers(_to_be_queried).then((data) => {
-          data.data.forEach((d) => {
-            _userMap.set(d.wallet!.toLocaleLowerCase(), d);
-          });
+        const data = await requests.user.getUsers(_to_be_queried);
+        data.data.forEach((d) => {
+          _userMap.set(d.wallet!.toLocaleLowerCase(), d);
         });
       } catch (error) {
-        console.log(error);
+        logError('getUsers failed', error);
       }
     }
 

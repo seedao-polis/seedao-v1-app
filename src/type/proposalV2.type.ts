@@ -16,7 +16,8 @@ export enum ProposalState {
 export interface IBaseCategory {
   id: number;
   parent_id: number;
-  metaforo_id: number;
+  /** @deprecated Metaforo 下线后不再使用 */
+  metaforo_id?: number;
   name: string;
   has_perm?: boolean;
 }
@@ -91,11 +92,15 @@ export interface Poll {
 export interface IComment {
   children: IComment[];
   content: string;
-  metaforo_post_id: number;
+  comment_id?: number;
+  parent_comment_id?: number;
+  /** @deprecated 迁移期兼容旧响应 */
+  metaforo_post_id?: number;
+  /** @deprecated 迁移期兼容旧响应 */
+  reply_metaforo_post_id?: number;
   proposal_arweave_hash: string;
   proposal_title: string;
   proposal_ts: number;
-  reply_metaforo_post_id: number;
   wallet: string;
   created_ts: number;
   avatar: string;
@@ -128,7 +133,9 @@ export interface IProposal extends ISimpleProposal {
   proposal_category_id: number | undefined;
   vote_type?: VoteOptionType;
   content_blocks: IContentBlock[];
-  reject_metaforo_comment_id: number;
+  reject_comment_id?: number;
+  /** @deprecated 迁移期兼容旧响应 */
+  reject_metaforo_comment_id?: number;
   reject_reason: string;
   is_rejected: string;
   is_based_on_custom_template: boolean | undefined;
@@ -155,7 +162,9 @@ export interface IProposal extends ISimpleProposal {
 
 export interface IActivity {
   action_ts: number;
-  metaforo_action: string;
+  action_type: string;
+  /** @deprecated 迁移期兼容旧响应 */
+  metaforo_action?: string;
   proposal_id: number;
   target_title: string;
   wallet: string;

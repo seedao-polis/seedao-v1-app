@@ -13,7 +13,8 @@ import useLoadQuill from 'hooks/useLoadQuill';
 import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import ConfirmModal from 'components/modals/confirmModal';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
+import { getCommentId, getParentCommentId } from 'utils/proposalComment';
 import { deleteCommet, addComment, editCommet } from 'requests/proposalV2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { ICommentDisplay } from 'type/proposalV2.type';
@@ -40,10 +41,10 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
       state: { userData, account },
       dispatch,
     } = useAuthContext();
-    const pinPost = posts.find((p) => p.metaforo_post_id === pinId);
-    const filterPosts = posts.filter((p) => p.metaforo_post_id !== pinId);
+    const pinPost = posts.find((p) => getCommentId(p) === pinId);
+    const filterPosts = posts.filter((p) => getCommentId(p) !== pinId);
 
-    const { checkMetaforoLogin } = useCheckMetaforoLogin();
+    const { ensureWalletLogin } = useWalletAuth();
     const replyRef = useRef<HTMLDivElement>(null);
 
     const enableQuill = useLoadQuill();
@@ -78,10 +79,10 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
       }
       let d: ICommentDisplay | undefined = undefined;
       posts.forEach((p: ICommentDisplay) => {
-        if (p.metaforo_post_id === reply_pid) {
+        if (getCommentId(p) === reply_pid) {
           d = p;
         } else {
-          const child = p.children?.find((ip: ICommentDisplay) => ip.metaforo_post_id === reply_pid);
+          const child = p.children?.find((ip: ICommentDisplay) => getCommentId(ip) === reply_pid);
           if (child) {
             d = child;
           }
@@ -104,7 +105,7 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
     const onFocusToWriteReply = async (e: any) => {
       e.stopPropagation();
       e.preventDefault();
-      const canReply = await checkMetaforoLogin();
+      const canReply = await ensureWalletLogin();
       canReply && setOpenReply(true);
     };
 
@@ -127,7 +128,7 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
     };
 
     const handleReply = async () => {
-      const canReply = await checkMetaforoLogin();
+      const canReply = await ensureWalletLogin();
       if (canReply) {
         dispatch({ type: AppActionType.SET_LOADING, payload: true });
         try {
@@ -159,7 +160,7 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
     };
 
     const handleDeletePost = async () => {
-      const canDelete = await checkMetaforoLogin();
+      const canDelete = await ensureWalletLogin();
       if (canDelete && toBeDeleteId) {
         dispatch({ type: AppActionType.SET_LOADING, payload: true });
         deleteCommet(id, toBeDeleteId)
@@ -188,7 +189,7 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
     const findPinPostChildrenParent = (id: number) => {
       const data = findReplyData(id);
       if (data) {
-        if (data.metaforo_post_id === pinId) {
+        if (getCommentId(data) === pinId) {
           return { ...data, userName: t('city-hall.Cityhall') };
         }
       }
@@ -218,7 +219,7 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
       filterPosts.map((p) => (
         <CommentComponent
           data={p}
-          key={p.metaforo_post_id}
+          key={getCommentId(p)}
           onReply={onReply}
           onEdit={onEdit}
           onDelete={onDelete}
@@ -230,8 +231,8 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
             <CommentComponent
               data={ip}
               isChild={true}
-              key={ip.metaforo_post_id}
-              parentData={findReplyData(ip.reply_metaforo_post_id)}
+              key={getCommentId(ip)}
+              parentData={findReplyData(getParentCommentId(ip))}
               onReply={onReply}
               onEdit={onEdit}
               onDelete={onDelete}
@@ -259,8 +260,8 @@ const ReplyComponent = React.forwardRef<IReplyOutputProps, IProps>(
               <CommentComponent
                 data={ip}
                 isChild={true}
-                key={ip.metaforo_post_id}
-                parentData={findPinPostChildrenParent(ip.reply_metaforo_post_id)}
+                key={getCommentId(ip)}
+                parentData={findPinPostChildrenParent(getParentCommentId(ip))}
                 onReply={onReply}
                 onEdit={onEdit}
                 onDelete={onDelete}

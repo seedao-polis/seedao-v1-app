@@ -1,11 +1,10 @@
-import { SEEDAO_USER, SEEDAO_USER_DATA, METAFORO_TOKEN, SENDING_ME_USER } from './constant';
+import { SEEDAO_USER, SEEDAO_USER_DATA, SENDING_ME_USER } from './constant';
 import { ITokenType } from 'type/user.type';
 
 export const clearStorage = () => {
   localStorage.removeItem(SEEDAO_USER);
   localStorage.removeItem(SENDING_ME_USER);
   localStorage.removeItem(SEEDAO_USER_DATA);
-  localStorage.removeItem(METAFORO_TOKEN);
 };
 
 export const checkTokenValid = (token?: string, expireAt?: number) => {

@@ -7,7 +7,7 @@ import ConfirmModal from 'components/modals/confirmModal';
 import { ProposalState } from 'type/proposalV2.type';
 import { rejectProposal, approveProposal } from 'requests/proposalV2';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
-import useMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
 import useToast, { ToastType } from 'hooks/useToast';
 
 interface IProps {
@@ -21,7 +21,7 @@ export default function ReviewProposalComponent({ id, onUpdateStatus }: IProps) 
   const [showRejectModal, setShowRejectModal] = useState(false);
 
   const { dispatch } = useAuthContext();
-  const { checkMetaforoLogin } = useMetaforoLogin();
+  const { ensureWalletLogin } = useWalletAuth();
   const { showToast } = useToast();
 
   const handleApprove = () => {
@@ -64,14 +64,14 @@ export default function ReviewProposalComponent({ id, onUpdateStatus }: IProps) 
   };
 
   const onClickApprove = async () => {
-    const canApprove = await checkMetaforoLogin();
+    const canApprove = await ensureWalletLogin();
     if (canApprove) {
       setShowApproveModal(true);
     }
   };
 
   const onClickReject = async () => {
-    const canReject = await checkMetaforoLogin();
+    const canReject = await ensureWalletLogin();
     if (canReject) {
       setShowRejectModal(true);
     }

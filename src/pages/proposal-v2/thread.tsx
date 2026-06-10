@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ContainerPadding } from 'assets/styles/global';
@@ -23,7 +23,8 @@ import BackerNav from 'components/common/backNav';
 import { MdPreview } from 'md-editor-rt';
 import ProposalStateTag, { getRealState } from 'components/proposalCom/stateTag';
 import useProposalCategories from 'hooks/useProposalCategories';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
+import { getCommentId } from 'utils/proposalComment';
 import publicJs from 'utils/publicJs';
 import useQuerySNS from 'hooks/useQuerySNS';
 import DefaultAvatarIcon from 'assets/Imgs/defaultAvatar.png';
@@ -49,8 +50,9 @@ import { getProposalSIPSlug } from 'utils';
 import useQueryUser from 'hooks/useQueryUser';
 import defaultImg from '../../assets/Imgs/defaultAvatar.png';
 import getConfig from "../../utils/envCofnig";
-import { useNetwork } from "wagmi";
 import { checkCanVote } from "../../requests/proposalV2";
+import { formatApiError } from 'utils/formatApiError';
+import { applyOptimisticVote, hasUserVoted, markProposalAsVoted, normalizeProposalVotes } from 'utils/proposalVote';
 
 enum BlockContentType {
   Reply = 1,
@@ -65,10 +67,10 @@ export default function ThreadPage() {
   const { t, i18n } = useTranslation();
   const {
     dispatch,
-    state: { theme, metaforoToken,account, userData },
+    state: { theme, account, userData },
   } = useAuthContext();
   const proposalCategories = useProposalCategories();
-  const { checkMetaforoLogin } = useCheckMetaforoLogin();
+  const { ensureWalletLogin, isLogin } = useWalletAuth();
   // const [voteType, setVoteType] = useState<number>(0);
 
   const [blockType, setBlockType] = useState<BlockContentType>(BlockContentType.Reply);
@@ -112,16 +114,6 @@ export default function ThreadPage() {
 
   const replyRef = useRef<IReplyOutputProps>(null);
 
-  const { chain } = useNetwork();
-  useEffect(() => {
-    if(metaforoToken || !account || !userData || !chain)return;
-    getMetaforo()
-  }, [metaforoToken,account,userData,chain]);
-  const getMetaforo = async()=>{
-
-    await checkMetaforoLogin();
-  }
-
   const getProposalDetail = async (refreshIdx?: number) => {
     dispatch({ type: AppActionType.SET_LOADING, payload: true });
     try {
@@ -133,17 +125,17 @@ export default function ThreadPage() {
           start_post_id = undefined;
         } else {
           const _arr = commentsArray[refreshIdx - 1];
-          start_post_id = _arr[_arr.length - 1].metaforo_post_id;
+          start_post_id = getCommentId(_arr[_arr.length - 1]);
         }
         res = await requests.proposalV2.getProposalDetail(Number(id), start_post_id);
       } else {
         const _arr = commentsArray[currentCommentArrayIdx];
         res = await requests.proposalV2.getProposalDetail(
           Number(id),
-          _arr ? _arr[_arr.length - 1]?.metaforo_post_id : undefined,
+          _arr ? getCommentId(_arr[_arr.length - 1]) : undefined,
         );
       }
-      setData(res.data);
+      setData(normalizeProposalVotes(res.data));
 
       const { associated_project_budgets: budgets } = res.data;
 
@@ -173,7 +165,7 @@ export default function ThreadPage() {
       data.prepayRemain = prepayRemain.join(',');
       setDetail(data);
 
-      const arr = res.data.content_blocks;
+      const arr = res.data.content_blocks || [];
       const componentsIndex = arr.findIndex((i: any) => i.type === 'components');
 
       const beforeComponents = arr.filter(
@@ -258,22 +250,47 @@ export default function ThreadPage() {
       }
     } catch (error: any) {
       logError('get proposal detail error:', error);
-      showToast(error.response?.data?.msg|| error?.data?.msg || error?.code || error, ToastType.Danger);
-      setErrorTips(error.response?.data?.msg|| error?.data?.msg || error?.code || error)
+      const errMsg = formatApiError(error?.response?.data ?? error);
+      showToast(errMsg, ToastType.Danger);
+      setErrorTips(errMsg);
     } finally {
       dispatch({ type: AppActionType.SET_LOADING, payload: false });
     }
   };
 
   useEffect(() => {
-    if(!id ||!showVote() )return;
-    const getVotePermission = () => {
-      checkCanVote(Number(id)).then((r) => {
+    if (!id || !showVote()) {
+      return;
+    }
+    if (hasUserVoted(data)) {
+      setHasPermission(false);
+      return;
+    }
+    checkCanVote(Number(id))
+      .then((r) => {
         setHasPermission(r.data);
+      })
+      .catch((error) => {
+        logError('checkCanVote failed', error);
       });
-    };
-    getVotePermission()
-  }, [id,data]);
+  }, [id, data]);
+
+  const refreshAfterVote = async (votedOptionIds?: number[], forceMarkVoted?: boolean) => {
+    await getProposalDetail();
+    setData((prev) => {
+      if (!prev || hasUserVoted(prev)) {
+        return prev;
+      }
+      if (votedOptionIds?.length) {
+        return applyOptimisticVote(prev, votedOptionIds);
+      }
+      if (forceMarkVoted) {
+        return markProposalAsVoted(prev);
+      }
+      return prev;
+    });
+    setHasPermission(false);
+  };
 
   useEffect(() => {
     if (state) {
@@ -325,7 +342,7 @@ export default function ThreadPage() {
       replyRef.current?.showReply();
       document.querySelector('#reply-history-block')?.scrollIntoView();
     }, 0);
-    checkMetaforoLogin();
+    ensureWalletLogin();
   };
 
   const handleEdit = () => {
@@ -350,7 +367,7 @@ export default function ThreadPage() {
   };
 
   const handleClickMoreAction = async (action: string) => {
-    const canOperate = await checkMetaforoLogin();
+    const canOperate = await ensureWalletLogin();
     if (!canOperate) {
       return;
     }
@@ -396,23 +413,13 @@ export default function ThreadPage() {
   };
 
 
-  const showVotedTag = (currentState:ProposalState | undefined) =>{
-    if (!data?.votes?.[0]) {
-      return false;
-    }
-    const votedItem = data?.votes?.[0].options.filter((item)=>item.is_vote);
+  const showVotedTag = (currentState: ProposalState | undefined) => {
+    return currentState === 'voting' && isLogin && hasUserVoted(data);
+  };
 
-    return (!!votedItem?.length &&  currentState === "voting" && !!metaforoToken) && hasPermission
-  }
-
-  const showVotedNot = (currentState:ProposalState | undefined) =>{
-    if (!data?.votes?.[0]) {
-      return false;
-    }
-    const votedItem = data?.votes?.[0].options.filter((item)=>item.is_vote);
-
-    return (!votedItem?.length &&  currentState === "voting"&& !!metaforoToken) && hasPermission
-  }
+  const showVotedNot = (currentState: ProposalState | undefined) => {
+    return currentState === 'voting' && isLogin && hasPermission && !hasUserVoted(data);
+  };
 
   const isCurrentApplicant = data?.applicant?.toLocaleLowerCase() === account?.toLocaleLowerCase();
 
@@ -441,13 +448,13 @@ export default function ThreadPage() {
     const _new_arr = [...commentsArray];
     for (const item of _new_arr[bindIdx]) {
       let flag = false;
-      if (item.metaforo_post_id === cid) {
+      if (getCommentId(item) === cid) {
         item.content = DeletedContent;
         item.deleted = 1;
         break;
       }
       for (const childItem of item.children || []) {
-        if (childItem.metaforo_post_id === cid) {
+        if (getCommentId(childItem) === cid) {
           childItem.content = DeletedContent;
           childItem.deleted = 1;
           flag = true;
@@ -475,13 +482,6 @@ export default function ThreadPage() {
   const handleProfile = () => {
     setShowModal(true);
   };
-
-  const applicantData = useMemo(() => {
-    applicant &&
-      requests.user.getUsers([applicant]).then((r) => {
-        setApplicantAvatar(r.data[0]?.sp?.avatar);
-      });
-  }, [applicant]);
 
   const getTimeTagDisplay = () => {
     if (data?.state === ProposalState.Draft) {
@@ -757,7 +757,7 @@ export default function ThreadPage() {
                 hasPermission={hasPermission}
                 currentState={currentState}
                 showMultiple={data!.is_multiple_vote}
-                updateStatus={getProposalDetail}
+                updateStatus={refreshAfterVote}
                 isOverrideProposal={data!.template_name === '否决提案'}
                 voteOptionType={data!.vote_type as VoteOptionType}
               />
@@ -783,7 +783,7 @@ export default function ThreadPage() {
 
               {blockType === BlockContentType.Reply && (
                 <ReplyComponent
-                  pinId={data?.reject_metaforo_comment_id}
+                  pinId={data?.reject_comment_id ?? data?.reject_metaforo_comment_id}
                   id={Number(id)}
                   hideReply={review}
                   posts={posts}

@@ -5,7 +5,7 @@ import VoteImg from '../../assets/Imgs/proposal/voteIcon.svg';
 import ShareImg from '../../assets/Imgs/proposal/shareIcon.svg';
 import CommentImg from '../../assets/Imgs/proposal/commentIcon.svg';
 
-import { getUserActions } from 'requests/proposalV2';
+import { getUserActivities } from 'requests/proposalV2';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import { formatTime } from 'utils/time';
 import { Trans } from 'react-i18next';
@@ -50,9 +50,9 @@ export default function HistoryAction() {
   const getList = async () => {
     try {
       dispatch({ type: AppActionType.SET_LOADING, payload: true });
-      const res = await getUserActions(10, currentSession);
+      const res = await getUserActivities(10, currentSession);
       const _list = res.data.records.map((item) => ({
-        type: item.metaforo_action as ActionType,
+        type: (item.action_type || item.metaforo_action) as ActionType,
         time: formatTime(item.action_ts * 1000),
         user: item.reply_to_wallet.toLocaleLowerCase(),
         title: item.target_title,

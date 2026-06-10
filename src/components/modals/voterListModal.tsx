@@ -2,13 +2,28 @@ import styled from 'styled-components';
 import BasicModal from './basicModal';
 import DefaultAvatar from 'assets/Imgs/defaultAvatarT.png';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getVotersOfOption, VoterType } from 'requests/proposalV2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import useToast, { ToastType } from 'hooks/useToast';
 import publicJs from 'utils/publicJs';
 import useQuerySNS from 'hooks/useQuerySNS';
+import { formatApiError } from 'utils/formatApiError';
+
+const mergeVoters = (prev: VoterType[], next: VoterType[]): VoterType[] => {
+  const seen = new Set(prev.map((item) => item.wallet?.toLowerCase()));
+  const merged = [...prev];
+  next.forEach((item) => {
+    const key = item.wallet?.toLowerCase();
+    if (!key || seen.has(key)) {
+      return;
+    }
+    seen.add(key);
+    merged.push(item);
+  });
+  return merged;
+};
 
 interface IUserProps {
   name: string;
@@ -38,30 +53,46 @@ export default function VoterListModal({ optionId, count, onClose }: IProps) {
   } = useAuthContext();
   const [page, setPage] = useState(1);
   const [list, setList] = useState<VoterType[]>([]);
-
-  const hasMore = list.length < 20;
+  const [hasMore, setHasMore] = useState(false);
   const { showToast } = useToast();
   const { getMultiSNS } = useQuerySNS();
 
-  const getList = () => {
+  const getList = useCallback(() => {
     dispatch({ type: AppActionType.SET_LOADING, payload: true });
     getVotersOfOption(optionId, page)
       .then((res) => {
-        setList([...list, ...res.data]);
+        const records = res.data ?? [];
+        setList((prev) => {
+          const merged = mergeVoters(prev, records);
+          const grew = merged.length > prev.length;
+          setHasMore(records.length > 0 && grew && merged.length < count);
+          return merged;
+        });
         setPage((p) => p + 1);
-        getMultiSNS(Array.from(new Set(res.data.map((item) => item.wallet))));
+        if (records.length) {
+          getMultiSNS(Array.from(new Set(records.map((item) => item.wallet))));
+        }
       })
-      .catch((err: any) => {
-        showToast(err, ToastType.Danger);
+      .catch((err: unknown) => {
+        showToast(formatApiError(err), ToastType.Danger);
+        setHasMore(false);
       })
       .finally(() => {
         dispatch({ type: AppActionType.SET_LOADING, payload: false });
       });
-  };
+  }, [count, dispatch, getMultiSNS, optionId, page, showToast]);
 
   useEffect(() => {
-    getList();
-  }, [optionId]);
+    setPage(1);
+    setList([]);
+    setHasMore(count > 0);
+  }, [count, optionId]);
+
+  useEffect(() => {
+    if (page === 1 && list.length === 0 && count > 0) {
+      getList();
+    }
+  }, [count, getList, list.length, page]);
 
   const formatSNS = (wallet: string) => {
     const name = snsMap.get(wallet) || wallet;
@@ -79,8 +110,8 @@ export default function VoterListModal({ optionId, count, onClose }: IProps) {
           hasMore={hasMore}
           loader={<></>}
         >
-          {list.map((item, index) => (
-            <li key={index}>
+          {list.slice(0, count).map((item, index) => (
+            <li key={`${item.wallet}-${index}`}>
               <UserBox name={formatSNS(item.wallet?.toLocaleLowerCase())} avatar={item.os_avatar} />
               <span>{item.weight}</span>
             </li>

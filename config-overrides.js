@@ -1,4 +1,16 @@
 const { override } = require('customize-cra');
+const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+
+/**
+ * CRA 的 ModuleScopePlugin 禁止 src 外导入；pnpm / 部分环境下
+ * react-refresh 会注入绝对路径，导致 255 个 "falls outside of src" 报错。
+ */
+const allowReactRefreshOutsideSrc = () => (config) => {
+  config.resolve.plugins = config.resolve.plugins.filter(
+    (plugin) => !(plugin instanceof ModuleScopePlugin),
+  );
+  return config;
+};
 
 const handleFallback = () => (config) => {
   const fallback = config.resolve.fallback || {};
@@ -23,4 +35,4 @@ const ignoreBrokenSourceMaps = () => (config) => {
   return config;
 };
 
-module.exports = override(handleFallback(), ignoreBrokenSourceMaps());
+module.exports = override(allowReactRefreshOutsideSrc(), handleFallback(), ignoreBrokenSourceMaps());

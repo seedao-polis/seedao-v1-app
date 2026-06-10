@@ -8,18 +8,9 @@ import {
   IActivity,
   ICategoryWithTemplates,
 } from 'type/proposalV2.type';
-import { SEE_AUTH } from 'utils/constant';
 import { v4 as uuidv4 } from 'uuid';
 
 const PATH_PREFIX = '/proposals/';
-
-export const getMetaforoData = () => {
-  try {
-    const seeauth = localStorage.getItem(SEE_AUTH);
-    const authData = JSON.parse(seeauth || '');
-    return authData?.metaforo;
-  } catch (error) {}
-};
 
 interface IProposalPageParams extends IPageParams {
   category_id?: number;
@@ -40,7 +31,6 @@ export const getProposalList = (data: IProposalPageParams): Promise<ResponseData
   return request.get(`${PATH_PREFIX}list`, data);
 };
 
-// my
 export const getMyProposalList = (
   data: IProposalPageParams,
   isPendingSubmit?: boolean,
@@ -48,12 +38,13 @@ export const getMyProposalList = (
   return request.get(`${PATH_PREFIX}my`, { ...data, pending_submit: isPendingSubmit ? 1 : undefined });
 };
 
-export const getProposalDetail = (id: number, startPostId?: number): Promise<ResponseData<IProposal>> => {
+export const getProposalDetail = (id: number, startCommentId?: number): Promise<ResponseData<IProposal>> => {
   return request.get(
     `${PATH_PREFIX}show/${id}`,
     {
-      start_post_id: startPostId,
-      access_token: getMetaforoData()?.token,
+      start_comment_id: startCommentId,
+      // 迁移期兼容旧后端参数名
+      start_post_id: startCommentId,
     },
     {},
   );
@@ -80,49 +71,41 @@ export const getCloseProposal = (
 
 type CreateProposalParamsType = {
   title: string;
-  is_multiple_vote?:boolean;
+  is_multiple_vote?: boolean;
   proposal_category_id: number | undefined;
   vote_type?: number | undefined;
   create_project_proposal_id?: any;
   template_id?: number | string;
   vote_options?: string[] | null;
   content_blocks: IContentBlock[];
-  submit_to_metaforo: boolean;
+  submit: boolean;
   components: any;
 };
 
-export const getUserActions = (
+export const getUserActivities = (
   size: number,
   session?: string,
 ): Promise<ResponseData<{ records: IActivity[]; session: string }>> => {
-  const data = getMetaforoData();
-  return request.get('/user/metaforo_activities', {
-    size,
-    session,
-    metaforo_access_token: data?.token,
-    userId: data?.id,
-  });
+  return request
+    .get('/user/proposal_activities', { size, session })
+    .catch(() => request.get('/user/metaforo_activities', { size, session }));
 };
 
-export const prepareMetaforo = () => {
-  const data = getMetaforoData();
-  return request.post('/user/prepare_metaforo', {
-    api_token: data?.token,
-    user: { id: data.id },
-  });
-};
+/** @deprecated 使用 getUserActivities */
+export const getUserActions = getUserActivities;
 
 export const saveOrSubmitProposal = (data: CreateProposalParamsType): Promise<ResponseData<IProposal>> => {
   return request.post(`${PATH_PREFIX}create`, {
     ...data,
-    metaforo_access_token: getMetaforoData()?.token,
+    // 迁移期兼容尚未改字段名的后端
+    submit_to_metaforo: data.submit,
   });
 };
 
 export const updateProposal = (id: number, data: CreateProposalParamsType): Promise<ResponseData<IProposal>> => {
   return request.post(`${PATH_PREFIX}update/${id}`, {
     ...data,
-    metaforo_access_token: getMetaforoData()?.token,
+    submit_to_metaforo: data.submit,
   });
 };
 
@@ -140,14 +123,12 @@ export const castVote = (id: number, vote_id: number, option: number[]) => {
   return request.post(`${PATH_PREFIX}vote/${id}`, {
     vote_id,
     options: option,
-    metaforo_access_token: getMetaforoData()?.token,
   });
 };
 
 export const closeVote = (id: number, vote_id: number) => {
   return request.post(`${PATH_PREFIX}close_vote/${id}`, {
     vote_id,
-    metaforo_access_token: getMetaforoData()?.token,
   });
 };
 
@@ -165,44 +146,40 @@ export const getVotersOfOption = (option_id: number, page: number): Promise<Resp
 
 // =========== comment ===========
 
-// NOTE: reply_id is metaforo_id
-export const addComment = (id: number, content: string, reply_id?: number) => {
+export const addComment = (id: number, content: string, parent_comment_id?: number) => {
   return request.post(`${PATH_PREFIX}add_comment/${id}`, {
     content,
-    reply_id,
+    parent_comment_id,
+    reply_id: parent_comment_id,
     editor_type: 0,
-    metaforo_access_token: getMetaforoData()?.token,
   });
 };
 
-export const editCommet = (id: number, content: string, cid: number) => {
+export const editCommet = (id: number, content: string, comment_id: number) => {
   return request.post(`${PATH_PREFIX}edit_comment/${id}`, {
-    post_id: cid,
+    comment_id,
+    post_id: comment_id,
     content,
     editor_type: 0,
-    metaforo_access_token: getMetaforoData()?.token,
   });
 };
 
-export const deleteCommet = (id: number, cid: number) => {
+export const deleteCommet = (id: number, comment_id: number) => {
   return request.post(`${PATH_PREFIX}delete_comment/${id}`, {
-    post_id: cid,
-    metaforo_access_token: getMetaforoData()?.token,
+    comment_id,
+    post_id: comment_id,
   });
 };
 
 // =========== review ===========
 
 export const approveProposal = (id: number) => {
-  return request.post(`${PATH_PREFIX}approve/${id}`, {
-    metaforo_access_token: getMetaforoData()?.token,
-  });
+  return request.post(`${PATH_PREFIX}approve/${id}`, {});
 };
 
 export const rejectProposal = (id: number, reason: string) => {
   return request.post(`${PATH_PREFIX}reject/${id}`, {
     reason,
-    metaforo_access_token: getMetaforoData()?.token,
   });
 };
 

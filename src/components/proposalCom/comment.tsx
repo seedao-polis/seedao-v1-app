@@ -10,6 +10,7 @@ import CommentIcon from '../../assets/Imgs/proposal/commentReply.svg';
 import ProfileComponent from '../../profile-components/profile';
 import { useAuthContext } from '../../providers/authProvider';
 import { ICommentDisplay } from 'type/proposalV2.type';
+import { getCommentId } from 'utils/proposalComment';
 import publicJs from 'utils/publicJs';
 import CityHallImg from 'assets/Imgs/proposal/cityhall.png';
 import LinkIcon from 'assets/Imgs/proposal/linkIcon.svg';
@@ -99,16 +100,16 @@ export default function CommentComponent({
   const handleReply = (e: any) => {
     e.stopPropagation();
     e.preventDefault();
-    onReply(data.metaforo_post_id, data.bindIdx);
+    onReply(getCommentId(data), data.bindIdx);
   };
 
   const handleClickMoreAction = (action: string) => {
     switch (action) {
       case 'edit':
-        onEdit(data.metaforo_post_id, { ops: JSON.parse(data.content) }, data.bindIdx);
+        onEdit(getCommentId(data), { ops: JSON.parse(data.content) }, data.bindIdx);
         break;
       case 'delete':
-        onDelete(data.metaforo_post_id, data.bindIdx);
+        onDelete(getCommentId(data), data.bindIdx);
         break;
     }
   };

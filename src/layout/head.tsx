@@ -6,7 +6,7 @@ import { parseToken, checkTokenValid, clearStorage } from '../utils/auth';
 import { Authorizer } from 'casbin.js';
 import { readPermissionUrl } from '../requests/user';
 import requests from '../requests';
-import { SEEDAO_ACCOUNT, SEEDAO_USER, SEEDAO_USER_DATA, SEE_AUTH, SELECT_WALLET } from '../utils/constant';
+import { SEEDAO_ACCOUNT, SEEDAO_USER, SEEDAO_USER_DATA, SELECT_WALLET } from '../utils/constant';
 import Avatar from 'components/common/avatar';
 import { Button, Dropdown } from 'react-bootstrap';
 import Select from 'components/common/select';
@@ -25,7 +25,6 @@ import LogoImgDark from '../assets/Imgs/dark/logo.svg';
 import getConfig from 'utils/envCofnig';
 
 import LoginModal from 'components/modals/login';
-import useMetaforoLogin from 'hooks/useMetaforoLogin';
 import useToast, { ToastType } from "../hooks/useToast";
 
 export default function Header() {
@@ -40,8 +39,6 @@ export default function Header() {
   console.log('[connect status]', `isConnected-${isConnected}, address-${address}`);
 
   const [list, setList] = useState<any[]>([]);
-  const { checkMetaforoLogin, LoginMetafoModal } = useMetaforoLogin();
-
   useEffect(() => {
     setList([
       { title: t('My.MyProfile'), link: '/user/profile', value: 'profile' },
@@ -106,18 +103,6 @@ export default function Header() {
         onClickLogout();
       }
       return;
-    }
-    const seeAuthData = localStorage.getItem(SEE_AUTH) || '';
-    try {
-      const data = JSON.parse(seeAuthData);
-      if (!data || !data.metaforo.id || !data.deschool) {
-        // onClickLogout();
-        // return;
-      } else {
-        dispatch({ type: AppActionType.SET_THIRD_PARTY_TOKEN, payload: data });
-      }
-    } catch (error) {
-      // return;
     }
     if (acc) {
       dispatch({ type: AppActionType.SET_ACCOUNT, payload: acc });
@@ -239,7 +224,6 @@ export default function Header() {
     dispatch({ type: AppActionType.SET_AUTHORIZER, payload: null });
     dispatch({ type: AppActionType.SET_WALLET_TYPE, payload: null });
     dispatch({ type: AppActionType.SET_ACCOUNT, payload: null });
-    dispatch({ type: AppActionType.SET_METAFORO_TOKEN, payload: null });
     try {
       await OneSignal.logout();
     } catch (error) {
@@ -327,7 +311,6 @@ export default function Header() {
         </RightBox>
       </nav>
       <LoginModal showModal={show_login_modal} />
-      <LoginMetafoModal />
     </HeadeStyle>
   );
 }

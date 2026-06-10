@@ -20,6 +20,7 @@ import sns from "@seedao2.0/sns-js";
 import { useNavigate } from "react-router-dom";
 import getConfig from "../../../utils/envCofnig";
 import useToast, { ToastType } from "../../../hooks/useToast";
+import { isLocalSkipProposalPerm } from 'utils/proposalDev';
 const { Check } = Form;
 
 type ExtraType = { id: number; name: string };
@@ -143,12 +144,12 @@ export default function ChooseTypeStep() {
 
   }
 
-  const checkSNS =   () =>{
-    if(selected?.tp?.category_name !== "P1提案") return false;
-    if(!account) return true;
-    return !snsName?.endsWith("seedao")
-
-  }
+  const checkSNS = () => {
+    if (isLocalSkipProposalPerm()) return false;
+    if (selected?.tp?.category_name !== 'P1提案') return false;
+    if (!account) return true;
+    return !snsName?.endsWith('seedao');
+  };
 
 
   return (

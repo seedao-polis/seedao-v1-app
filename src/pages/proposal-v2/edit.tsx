@@ -7,7 +7,7 @@ import { IContentBlock, IProposal, ProposalState, Poll } from 'type/proposalV2.t
 import { useAuthContext, AppActionType } from 'providers/authProvider';
 import { Preview, Template } from '@taoist-labs/components';
 import { MdEditor } from 'md-editor-rt';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
 import { updateProposal, getProposalDetail, UploadPictures } from 'requests/proposalV2';
 import { Button } from 'react-bootstrap';
 import getConfig from '../../utils/envCofnig';
@@ -32,7 +32,7 @@ export default function EditProposal() {
     dispatch,
   } = useAuthContext();
 
-  const { checkMetaforoLogin } = useCheckMetaforoLogin();
+  const { ensureWalletLogin } = useWalletAuth();
   const proposalCategories = useProposalCategories();
 
   const [data, setData] = useState<IProposal>();
@@ -370,7 +370,7 @@ export default function EditProposal() {
     //   };
     // }
 
-    await checkMetaforoLogin();
+    await ensureWalletLogin();
 
     let holderNew = [...holder];
 
@@ -400,7 +400,7 @@ export default function EditProposal() {
       components: submitData,
       is_multiple_vote:data!.is_multiple_vote,
       create_project_proposal_id: pid ? pid : 0,
-      submit_to_metaforo: submitType === 'submit',
+      submit: submitType === 'submit',
     })
       .then((r) => {
         showToast(

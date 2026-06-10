@@ -8,7 +8,7 @@ import ProposalStateTag, { getRealState } from './stateTag';
 import DefaultAvatarIcon from 'assets/Imgs/defaultAvatar.png';
 import RhtArrow from 'assets/Imgs/proposal/rightArrow.svg';
 import { useTranslation } from 'react-i18next';
-import useMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
 import CategoryTag from './categoryTag';
 import { getProposalSIPSlug } from 'utils';
 
@@ -26,9 +26,9 @@ export default function ReviewProposalItem({
     state: { theme },
   } = useAuthContext();
   const { t } = useTranslation();
-  const { checkMetaforoLogin } = useMetaforoLogin();
+  const { ensureWalletLogin } = useWalletAuth();
   const openProposal = async () => {
-    const canReview = await checkMetaforoLogin();
+    const canReview = await ensureWalletLogin();
     if (canReview) {
       isReview
         ? navigate(`/city-hall/governance/review-proposal/${data.id}`, { state: data })

@@ -23,13 +23,11 @@ import {
   getNonce,
   loginWithSeeAuth,
   readPermissionUrl,
-  loginToMetafo,
-  loginToDeschool,
   loginToSBT
 } from "requests/user";
 import { WalletType, Wallet } from 'wallet/wallet';
 import { createSiweMessage } from 'utils/sign';
-import { SELECT_WALLET, SEEDAO_USER_DATA, METAFORO_TOKEN } from 'utils/constant';
+import { SELECT_WALLET, SEEDAO_USER_DATA } from 'utils/constant';
 import { clearStorage } from 'utils/auth';
 import { Authorizer } from 'casbin.js';
 import ReactGA from 'react-ga4';
@@ -37,8 +35,6 @@ import OneSignal from 'react-onesignal';
 import getConfig from 'utils/envCofnig';
 import useToast, { ToastType } from 'hooks/useToast';
 import { WalletName } from '@seedao/see-auth';
-import { prepareMetaforo } from 'requests/proposalV2';
-
 const networkConfig = getConfig().NETWORK;
 
 enum CONNECTOR_ID {
@@ -140,42 +136,6 @@ const LoginModalContent = () => {
             domain: window.location.host,
             walletName: getSeeAuthWalletName(selectConnectorId),
           });
-          // login to third party
-          let loginedMetaforo = false;
-          try {
-            const loginResp = await Promise.all([
-              loginToMetafo(res.data.see_auth),
-              // loginToDeschool(res.data.see_auth)
-            ]);
-            if (loginResp[0].data.user_id) {
-              loginedMetaforo = true;
-              dispatch({
-                type: AppActionType.SET_THIRD_PARTY_TOKEN,
-                payload: {
-                  metaforo: loginResp[0].data.user_id && {
-                    id: loginResp[0].data.user_id,
-                    account: address,
-                    token: loginResp[0].data.token,
-                  },
-                  // deschool: loginResp[1].data.jwtToken,
-                },
-              });
-            }
-
-          } catch (error) {
-            console.error('3rd party login error', error);
-
-            dispatch({
-              type: AppActionType.SET_THIRD_PARTY_TOKEN,
-              payload: {
-                metaforo: null,
-                // deschool: loginResp[1].data.jwtToken,
-              },
-            });
-          }
-
-
-
           try {
             const loginResp:any = await loginToSBT(res.data.see_auth);
 
@@ -218,7 +178,6 @@ const LoginModalContent = () => {
           } catch (error) {
             logError('OneSignal login error', error);
           }
-          loginedMetaforo && prepareMetaforo();
         } catch (error: any) {
           setClickConnectFlag(false);
           showToast(error?.data?.msg || error?.code || error, ToastType.Danger, { autoClose: false });

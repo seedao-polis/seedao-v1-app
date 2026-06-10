@@ -8,10 +8,12 @@ import { Poll, VoteOptionType, VoteType, VoteOption, VoteGateType, ProposalState
 import { castVote, checkCanVote, closeVote } from 'requests/proposalV2';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import useToast, { ToastType } from 'hooks/useToast';
-import useCheckMetaforoLogin from 'hooks/useMetaforoLogin';
+import useWalletAuth from 'hooks/useWalletAuth';
 import VoterListModal from 'components/modals/voterListModal';
 import ConfirmModal from 'components/modals/confirmModal';
 import { formatDeltaDate } from 'utils/time';
+import { formatApiError } from 'utils/formatApiError';
+import { isAlreadyVotedError, shouldShowCustomVoteLabels } from 'utils/proposalVote';
 import usePermission from 'hooks/usePermission';
 import { PermissionAction, PermissionObject } from 'utils/constant';
 
@@ -25,7 +27,7 @@ interface IProps {
   isOverrideProposal?: boolean;
   execution_ts?: number;
   voteOptionType: VoteOptionType;
-  updateStatus: () => void;
+  updateStatus: (votedOptionIds?: number[], forceMarkVoted?: boolean) => void | Promise<void>;
   currentState?:string;
   showMultiple?:boolean
   hasPermission?:boolean
@@ -75,11 +77,15 @@ export default function ProposalVote({
   const { dispatch } = useAuthContext();
   const { showToast } = useToast();
 
-  const { checkMetaforoLogin } = useCheckMetaforoLogin();
+  const { ensureWalletLogin } = useWalletAuth();
   const canUseCityhall = usePermission(PermissionAction.AuditApplication, PermissionObject.ProjectAndGuild);
 
 
   const pollStatus = getPollStatus(poll.poll_start_at, poll.close_at);
+  const showCustomOptionLabel = useMemo(
+    () => shouldShowCustomVoteLabels(voteOptionType, poll.options),
+    [voteOptionType, poll.options],
+  );
   const renderExecutionTip = (props: any) => (
     <Tooltip {...props}>
       <Tip>{t('Proposal.ExecutionTip')}</Tip>
@@ -118,7 +124,7 @@ export default function ProposalVote({
       return <CloseTag>
         <span>{t('Proposal.VoteClose')}</span>
         {
-          ((currentState === ProposalState.VotingPassed || currentState === ProposalState.Executed) &&  (voteOptionType === 99 || voteOptionType === 98)) && <>
+          ((currentState === ProposalState.VotingPassed || currentState === ProposalState.Executed) && showCustomOptionLabel) && <>
             <span className="options">{t("Proposal.option")}"{formatResult(poll.options)}"{t("Proposal.win")}</span></>
         }
       </CloseTag>;
@@ -144,7 +150,7 @@ export default function ProposalVote({
         </OpenTag>
       );
     }
-  }, [pollStatus, t, canUseCityhall, hasClosed, execution_ts, onlyShowVoteOption]);
+  }, [pollStatus, t, canUseCityhall, hasClosed, execution_ts, onlyShowVoteOption, showCustomOptionLabel, currentState, poll.options, proposalState]);
 
   const onConfirmVote = () => {
     dispatch({ type: AppActionType.SET_LOADING, payload: true });
@@ -157,14 +163,22 @@ export default function ProposalVote({
     }
 
     castVote(id, poll.id, selectArr)
-      .then(() => {
+      .then(async () => {
         setShowConfirmVote(false);
-        updateStatus();
+        setSelectOption(undefined);
+        setMultiArr([]);
+        await updateStatus(selectArr);
         showToast(t('Msg.CastVoteSuccess'), ToastType.Success);
       })
-      .catch((error) => {
+      .catch(async (error) => {
         logError('cast error failed', error);
-        showToast(`cast error failed: ${error?.data?.msg || error?.code || error}`, ToastType.Danger);
+        if (isAlreadyVotedError(error)) {
+          setShowConfirmVote(false);
+          await updateStatus(selectArr.length ? selectArr : undefined, true);
+          showToast(t('Proposal.HasVote'), ToastType.Success);
+          return;
+        }
+        showToast(formatApiError(error?.data ?? error), ToastType.Danger);
       })
       .finally(() => {
         dispatch({ type: AppActionType.SET_LOADING, payload: false });
@@ -188,7 +202,7 @@ export default function ProposalVote({
   };
 
   const goVote = async (option: VoteOption) => {
-    const canVote = await checkMetaforoLogin();
+    const canVote = await ensureWalletLogin();
     if (!canVote) {
       return;
     }
@@ -234,10 +248,11 @@ export default function ProposalVote({
               <tr key={index}>
                 <td>
                   <OptionContent $highlight={option.is_vote}>
-                    {
-                      (voteOptionType === 99 || voteOptionType === 98) &&
-                      <span className="purple">{t("Proposal.custom")} {String.fromCharCode(65 + index)}</span>
-                    }
+                    {showCustomOptionLabel && (
+                      <span className="purple">
+                        {t('Proposal.custom')} {String.fromCharCode(65 + index)}
+                      </span>
+                    )}
                     {option.html}
                     {!!option.is_vote && <HasVote>({t('Proposal.HasVote')})</HasVote>}
                   </OptionContent>

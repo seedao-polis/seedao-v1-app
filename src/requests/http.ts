@@ -27,7 +27,8 @@ instance.interceptors.request.use(
       !config.url.includes('list_with_perm') &&
       !config.url.includes('creating_project_proposals')&&
       !config.url.includes('applications/assets/statistics')&&
-      !config.url.includes('proposals/list')
+      !config.url.includes('proposals/list') &&
+      !config.url.includes('proposals/show')
     ) {
       return config;
     }
@@ -44,13 +45,11 @@ instance.interceptors.request.use(
     const tokenData = parseToken(tokenstr!);
 
 
-    if(config.url.indexOf("proposals/list") > -1) {
-      if (tokenstr && tokenstr !== "null" ){
+    if (config.url.includes('proposals/list') || config.url.includes('proposals/show')) {
+      if (tokenstr && tokenstr !== 'null') {
         config.headers['Authorization'] = `Bearer ${tokenData?.token || ''}`;
-        return config;
-      }else{
-        return config;
       }
+      return config;
     }
 
 
