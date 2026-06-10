@@ -21,12 +21,12 @@ const Polygon_Network = {
   //   "https://endpoints.omniatech.io/v1/eth/goerli/public",
   // ],
   rpcs: [
-    // 'https://polygon-mainnet.g.alchemy.com/v2/-MLinGy2l91vLVZWXmRfNYf9DavMxaEA',
-    'https://polygon-mainnet.seedao.tech',
+    process.env.REACT_APP_POLYGON_RPC,
     'https://polygon-mainnet.g.alchemy.com/v2/YuNeXto27ejHnOIGOwxl2N_cHCfyLyLE',
+    'https://polygon-mainnet.seedao.tech',
     // 'https://polygon-pokt.nodies.app',
     // 'https://polygon.llamarpc.com',
-  ],
+  ].filter((rpc): rpc is string => !!rpc),
   icon: PolygonIcon,
   explorer:"https://polygonscan.com",
   tokens: [

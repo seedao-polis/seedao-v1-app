@@ -23,6 +23,17 @@ import MinusImg from 'assets/Imgs/light/minus.svg';
 import { getProjectById } from '../../../requests/project';
 import useQuerySNS from "../../../hooks/useQuerySNS";
 
+const PROPOSAL_CONTENT_PATTERN = /^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/;
+
+const isProposalContentFilled = (content?: string) => !!content && PROPOSAL_CONTENT_PATTERN.test(content);
+
+const OPTIONAL_PROPOSAL_FIELD_TITLES = new Set(['备注', 'Remarks']);
+
+const isOptionalProposalField = (title?: string) => !!title && OPTIONAL_PROPOSAL_FIELD_TITLES.has(title);
+
+const isBlockSubmitReady = (item: { title?: string; content?: string }) =>
+  isOptionalProposalField(item.title) || isProposalContentFilled(item.content);
+
 const Box = styled.ul`
   position: relative;
   .cm-scroller {
@@ -689,8 +700,8 @@ export default function CreateStep({ onClick }: any) {
   const submitDisabled =
     !title ||
     !title.trim() ||
-    beforeList.some((item) => !item.content || !/^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/.test(item.content)) ||
-    list.some((item) => !item.content || !/^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/.test(item.content)) ||
+    beforeList.some((item) => !isBlockSubmitReady(item)) ||
+    list.some((item) => !isBlockSubmitReady(item)) ||
     ((voteType === 99 || voteType === 98) && !!EmptyArray?.length);
 
   return (
@@ -971,6 +982,7 @@ const BtnFlex = styled(Button)`
   gap: 5px;
   line-height: 26px;
 `;
+
 const LoadingBox = styled.div`
   /* HTML: <div class="loader"></div> */
   margin-top: 2px;

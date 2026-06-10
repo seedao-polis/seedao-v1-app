@@ -6,10 +6,11 @@ import CreateProposalProvider from './store';
 import ChooseTypeStep from './chooseType';
 import CreateStep from './createStep';
 import { useCreateProposalContext } from './store';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AppActionType, useAuthContext } from 'providers/authProvider';
 import { getTemplates } from 'requests/proposalV2';
-import { applyLocalProposalPermBypass } from 'utils/proposalDev';
+import { applyProposalTemplatePermissions } from 'utils/proposalDev';
+import { formatApiError } from 'utils/formatApiError';
 import useToast, { ToastType } from "../../../hooks/useToast";
 
 const CreateProposalSteps = () => {
@@ -17,29 +18,58 @@ const CreateProposalSteps = () => {
   const { currentStep, proposalType, goBackStepOne } = useCreateProposalContext();
   const { showToast } = useToast();
 
-  const { dispatch } = useAuthContext();
+  const {
+    dispatch,
+    state: { account },
+  } = useAuthContext();
+
+  const fetchedForAccountRef = useRef<string>();
 
   useEffect(() => {
+    if (!account) {
+      return;
+    }
+
+    const accountKey = account.toLowerCase();
+    if (fetchedForAccountRef.current === accountKey) {
+      return;
+    }
+    fetchedForAccountRef.current = accountKey;
+
+    let cancelled = false;
     dispatch({ type: AppActionType.SET_LOADING, payload: true });
 
     getTemplates()
       .then((resp) => {
+        if (cancelled) {
+          return;
+        }
         let list = resp?.data || [];
         list.sort((a, b) => a.category_display_index - b.category_display_index || 0);
         list.forEach((item) => {
           item.templates.sort((a, b) => (a.display_index || 0) - (b.display_index || 0));
         });
-        list = applyLocalProposalPermBypass(list);
+        list = applyProposalTemplatePermissions(list);
         dispatch({ type: AppActionType.SET_CATEGORIES_TEMPLATES, payload: list });
       })
-      .catch((error:any) => {
+      .catch((error: unknown) => {
+        if (cancelled) {
+          return;
+        }
+        fetchedForAccountRef.current = undefined;
         logError('getTemplates failed', error);
-        showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
+        showToast(formatApiError(error), ToastType.Danger);
       })
       .finally(() => {
-        dispatch({ type: AppActionType.SET_LOADING, payload: false });
+        if (!cancelled) {
+          dispatch({ type: AppActionType.SET_LOADING, payload: false });
+        }
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [account, dispatch]);
 
   const showstep = () => {
     switch (currentStep) {

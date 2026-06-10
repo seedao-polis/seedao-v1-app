@@ -474,11 +474,19 @@ export default function EditProposal() {
     : '';
 
   // const submitDisabled = !title || !title.trim() || contentBlocks.some((item) => !item.content);
+  const isOptionalProposalField = (fieldTitle?: string) => fieldTitle === '备注' || fieldTitle === 'Remarks';
+  const isBlockSubmitReady = (item: { title?: string; content?: string }) => {
+    if (isOptionalProposalField(item.title)) {
+      return true;
+    }
+    return !!item.content && /^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/.test(item.content);
+  };
+
   const submitDisabled =
     !title ||
     !title.trim() ||
-    beforeList.some((item) => !item.content || !/^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/.test(item.content)) ||
-    contentBlocks.some((item) => !item.content || !/^<!--.*-->(.|\n)+$|^(?!(<!--.*?-->))[\s\S]+$/.test(item.content));
+    beforeList.some((item) => !isBlockSubmitReady(item)) ||
+    contentBlocks.some((item) => !isBlockSubmitReady(item));
 
   return (
     <Page>
