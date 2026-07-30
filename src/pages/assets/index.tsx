@@ -16,7 +16,7 @@ import EthImg from 'assets/Imgs/network/ethereumWhite.jpg';
 import PolygonImg from 'assets/Imgs/network/polygonWhite.jpg';
 import getConfig from 'utils/envCofnig';
 import useCurrentSeason from 'hooks/useCurrentSeason';
-import { getVaultBalance, IVaultBalance } from 'requests/publicData';
+import { IVaultBalance } from 'requests/publicData';
 
 const BoxOuter = styled.div`
   ${ContainerPadding};
@@ -107,6 +107,30 @@ const VaultAddress = {
   IncubatorVault: '0x444C1Cf57b65C011abA9BaBEd05C6b13C11b03b5',
 };
 
+const HARDCODED_VAULTS: IVaultBalance[] = [
+  {
+    wallet: VaultAddress.CommunityVaultPolygon,
+    chainId: 137,
+    fiatTotal: '2788.142892',
+    threshold: 0,
+    owners: 0,
+  },
+  {
+    wallet: VaultAddress.CommunityVault,
+    chainId: 1,
+    fiatTotal: '16051.15',
+    threshold: 0,
+    owners: 0,
+  },
+];
+
+const HARDCODED_WALLETS = HARDCODED_VAULTS.reduce<{ [a: string]: IVaultBalance }>((acc, v) => {
+  acc[v.wallet.toLocaleLowerCase()] = v;
+  return acc;
+}, {});
+
+const HARDCODED_TOTAL_BALANCE = HARDCODED_VAULTS.reduce((sum, v) => sum + Number(v.fiatTotal), 0);
+
 const getVaultName = (address: string) => {
   switch (address) {
     case VaultAddress.CommunityVault:
@@ -181,13 +205,13 @@ export default function Index() {
     see_total_amount:0
   });
   const [showModifyModal, setshowModifyModal] = useState<BudgetType>();
-  const [totalBalance, setTotalBalance] = useState('0.00');
+  const totalBalance = HARDCODED_TOTAL_BALANCE.format();
+  const wallets = HARDCODED_WALLETS;
   const [totalSCR, setTotalSCR] = useState('0');
   const [nftData, setNftData] = useState({
     floorPrice: '0',
     totalSupply: '0',
   });
-  const [wallets, setWallets] = useState<{ [address: string]: IVaultBalance }>({});
 
   const getAssets = async () => {
     try {
@@ -276,27 +300,9 @@ export default function Index() {
     }
   };
 
-  const getVaultData = async () => {
-    try {
-      const res = await getVaultBalance();
-      const _w: { [a: string]: IVaultBalance } = {};
-      res.data.wallets.forEach((r) => {
-        _w[r.wallet.toLocaleLowerCase()] = r;
-      });
-      setWallets(_w);
-      let v: number = 0;
-      res.data.wallets.forEach((w) => (v += Number(w.fiatTotal)));
-      setTotalBalance(v.format());
-    } catch (error:any) {
-      logError(error);
-      showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
-    }
-  };
-
   useEffect(() => {
     getSCR();
     getFloorPrice();
-    getVaultData();
   }, []);
 
   const borderStyle = useMemo(() => {
