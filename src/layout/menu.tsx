@@ -64,7 +64,6 @@ import { WalletType } from 'wallet/wallet';
 import AppVersion from '../components/version';
 import useToast, { ToastType } from "../hooks/useToast";
 import { loginChat } from "../requests/chatAI";
-import ContactAssistant from "../components/assistant";
 
 const LftLi = styled.div<{ selected?: boolean }>`
   padding: 10px 0;
@@ -330,20 +329,20 @@ const items: MenuItemType[] = [
     },
     link: { href: '/archive' },
   },
-  {
-    title: 'SeeChat',
-    icon: {
-      dark: {
-        nor: EventImg,
-        active: EventImgActive,
-      },
-      light: {
-        nor: EventImgLight,
-        active: EventImgActive,
-      },
-    },
-    link: { href: '/ai' },
-  },
+  // {
+  //   title: 'SeeChat',
+  //   icon: {
+  //     dark: {
+  //       nor: EventImg,
+  //       active: EventImgActive,
+  //     },
+  //     light: {
+  //       nor: EventImgLight,
+  //       active: EventImgActive,
+  //     },
+  //   },
+  //   link: { href: '/ai' },
+  // },
   // {
   //   title: 'Home.OnlineEvent',
   //   icon: {
@@ -543,7 +542,6 @@ export default function Menu({ isMedium }: { isMedium: boolean }) {
         >
           <img src={theme ? MenuSwitch : MenuSwitchLight} alt="" />
         </SwitchBox>
-        <ContactAssistant />
         {menuItemsFormat.map((item) => (
           <MenuItem
             open={open}

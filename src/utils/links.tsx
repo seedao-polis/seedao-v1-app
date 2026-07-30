@@ -313,20 +313,20 @@ const links = {
       icon: DefaultImg,
       desc: 'apps.claimDesc',
     },
-    {
-      id: 'module-ai',
-      name: 'apps.chatAI',
-      link: '/ai',
-      icon: AiImg,
-      desc: 'apps.chatAITips',
-    },
-    {
-      id: 'module-sns',
-      name: 'apps.SNS',
-      link: '/sns/register',
-      icon: SNSImg,
-      desc: 'apps.SNSDesc',
-    },
+    // {
+    //   id: 'module-ai',
+    //   name: 'apps.chatAI',
+    //   link: '/ai',
+    //   icon: AiImg,
+    //   desc: 'apps.chatAITips',
+    // },
+    // {
+    //   id: 'module-sns',
+    //   name: 'apps.SNS',
+    //   link: '/sns/register',
+    //   icon: SNSImg,
+    //   desc: 'apps.SNSDesc',
+    // },
     {
       id: 'podcast',
       name: 'apps.podcastTitle',
@@ -419,13 +419,13 @@ const links = {
     //   icon: Wormhole3Icon,
     //   desc: 'apps.Wormhole3Desc',
     // },
-    {
-      id: 'Metaforo',
-      name: 'Metaforo',
-      link: 'https://forum.seedao.xyz/',
-      icon: MetaforoIcon,
-      desc: 'apps.MetaforoDesc',
-    },
+    // {
+    //   id: 'Metaforo',
+    //   name: 'Metaforo',
+    //   link: 'https://forum.seedao.xyz/',
+    //   icon: MetaforoIcon,
+    //   desc: 'apps.MetaforoDesc',
+    // },
     // {
     //   id: 'module-pub',
     //   name: 'apps.Pub',
@@ -454,15 +454,15 @@ const links = {
     //   icon: EchoImg,
     //   desc: 'apps.EchoDesc',
     // },
-    {
-      id: ['preview', 'prod'].includes(process.env.REACT_APP_ENV_VERSION as string)
-        ? 'coming-soon'
-        : 'module-see',
-      name: 'See Swap',
-      link: '/see-swap',
-      icon: 'https://avatars.githubusercontent.com/u/36115574?s=200&v=4',
-      desc: 'Coming Soon',
-    },
+    // {
+    //   id: ['preview', 'prod'].includes(process.env.REACT_APP_ENV_VERSION as string)
+    //     ? 'coming-soon'
+    //     : 'module-see',
+    //   name: 'See Swap',
+    //   link: '/see-swap',
+    //   icon: 'https://avatars.githubusercontent.com/u/36115574?s=200&v=4',
+    //   desc: 'Coming Soon',
+    // },
 
 
   ],
