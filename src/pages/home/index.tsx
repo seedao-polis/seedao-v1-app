@@ -25,7 +25,6 @@ import { formatTime } from "../../utils/time";
 import useToast, { ToastType } from "../../hooks/useToast";
 import { getNodeSBT } from "../../requests/publicData";
 import { getCityHallNode } from "../../requests/cityHall";
-import axios from "axios";
 import { ReTurnProject } from "../../type/project.type";
 import { getProjects, IProjectPageParams } from "../../requests/project";
 import { ethers } from "ethers";
@@ -281,9 +280,11 @@ const BtmBox = styled.div`
 `;
 
 type UserMap = { [w: string]: IUser };
+const SNS_HOLDERS = 776;
+const SEED_HOLDERS = 471;
+
 export default function Home() {
   const { t } = useTranslation();
-  const [seedHolders, setSEEDHolders] = useState(0);
   const [governNodes, setGovernNodes] = useState(0);
   const [onboardingHolders, setOnboardingHolders] = useState(0);
   const [onNewHolders, setNewHolders] = useState(0);
@@ -291,7 +292,6 @@ export default function Home() {
   const [sbtHolders,setSbtHolders] = useState(0);
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const [snsNum,setSnsNum] = useState(0);
   const [proList, setProList] = useState<ReTurnProject[]>([]);
 
   const { getMultiSNS } = useQuerySNS();
@@ -386,7 +386,6 @@ export default function Home() {
 
   useEffect(() => {
     getStatics()
-    getScrSns()
     getproList()
   }, []);
 
@@ -410,22 +409,6 @@ export default function Home() {
       console.error(error)
     }
 
-  }
-
-  const getScrSns = async() =>{
-    try {
-      const res = await axios.get(`https://tokentracker.seedao.tech`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      setSEEDHolders(res.data?.seed?.holders);
-      setSnsNum(res.data?.sns?.holders);
-      // setScr(res.data?.scr?.holders);
-    } catch(error) {
-      console.error(error)
-    }
   }
 
 //   useEffect(() => {
@@ -543,7 +526,7 @@ export default function Home() {
             <img src={theme ? SGNImg : SGNImgLight} alt="" />
           </dt>
           <dd>
-            <div className="num">{snsNum}</div>
+            <div className="num">{SNS_HOLDERS}</div>
             <div className="tips">{t('Home.members')}</div>
           </dd>
         </dl>
@@ -553,7 +536,7 @@ export default function Home() {
             <img src={theme ? SbtImg : SbtImgLight} alt="" />
           </dt>
           <dd>
-            <div className="num">{seedHolders}</div>
+            <div className="num">{SEED_HOLDERS}</div>
             <div className="tips">{t('Home.SGNHolder')}</div>
           </dd>
 
