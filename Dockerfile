@@ -14,8 +14,10 @@ ENV NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
 ENV GENERATE_SOURCEMAP=false
 ENV DISABLE_ESLINT_PLUGIN=true
 ENV NODE_OPTIONS=--max-old-space-size=6144
-RUN npm ci
+# postinstall needs scripts/ — skip lifecycle hooks until source is copied
+RUN npm ci --ignore-scripts
 COPY . .
+RUN node scripts/link-react-google-calendar-locale.js
 ENV REACT_APP_ENV_VERSION=prod
 RUN npm run build:online
 
