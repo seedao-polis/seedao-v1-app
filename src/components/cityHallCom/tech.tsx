@@ -52,11 +52,10 @@ export default function TechPanel() {
   const [disabled,setDisabled] = useState<boolean>(false);
 
   const lst = useMemo(() => {
-    // @ts-ignore
     return filterCityHallLinksForEnv(Links.tech).map((item) => ({
       ...item,
-      name: t(item.name) as string,
-      desc: t(item.desc) as string,
+      name: t(item.name as any) as string,
+      desc: t(item.desc as any) as string,
       disabled,
     }));
   }, [t, disabled]);

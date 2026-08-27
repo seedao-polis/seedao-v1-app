@@ -16,11 +16,10 @@ export default function Apps() {
   const { t } = useTranslation();
 
   const events = useMemo(() => {
-    // @ts-ignore
     return filterAppsForEnv(Links.apps).map((item) => ({
       ...item,
-      name: t(item.name) as string,
-      desc: t(item.desc) as string,
+      name: t(item.name as any) as string,
+      desc: t(item.desc as any) as string,
     }));
   }, [t]);
 
