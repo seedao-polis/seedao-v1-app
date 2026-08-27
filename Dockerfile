@@ -5,10 +5,15 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 # husky / native build not needed for production build
 ENV HUSKY=0
 ENV CI=false
+# Align with netlify.toml / local .npmrc (legacy-peer-deps, official registry for @seedao2.0)
+ENV NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+ENV GENERATE_SOURCEMAP=false
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV NODE_OPTIONS=--max-old-space-size=6144
 RUN npm ci
 COPY . .
 ENV REACT_APP_ENV_VERSION=prod
