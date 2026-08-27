@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAccount, useSwitchNetwork } from 'wagmi';
 import { readContract } from 'wagmi/actions';
 import LoadingImg from 'assets/Imgs/loading.png';
-import sns from '@seedao2.0/sns-js';
+import sns from 'utils/sns';
 
 import useToast, { ToastType } from 'hooks/useToast';
 import { Button } from 'react-bootstrap';

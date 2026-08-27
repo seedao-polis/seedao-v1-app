@@ -10,7 +10,7 @@ import CameraIconSVG from 'components/svgs/camera';
 import { useNavigate } from 'react-router-dom';
 import { compressionFile, fileToDataURL } from 'utils/image';
 import { ethers } from 'ethers';
-import sns from '@seedao2.0/sns-js';
+import sns from 'utils/sns';
 
 import ConfirmModal from 'components/modals/confirmModal';
 import getConfig from "../../utils/envCofnig";

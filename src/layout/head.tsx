@@ -23,6 +23,7 @@ import MoonImg from '../assets/Imgs/moon.png';
 import LogoImg from '../assets/Imgs/light/logo.svg';
 import LogoImgDark from '../assets/Imgs/dark/logo.svg';
 import getConfig from 'utils/envCofnig';
+import { hideWalletLogin, disablePushService } from 'utils/envFlags';
 
 import LoginModal from 'components/modals/login';
 import useToast, { ToastType } from "../hooks/useToast";
@@ -225,7 +226,9 @@ export default function Header() {
     dispatch({ type: AppActionType.SET_WALLET_TYPE, payload: null });
     dispatch({ type: AppActionType.SET_ACCOUNT, payload: null });
     try {
-      await OneSignal.logout();
+      if (!disablePushService()) {
+        await OneSignal.logout();
+      }
     } catch (error) {
       logError('onesignal logout failed', error);
     }
@@ -305,7 +308,7 @@ export default function Header() {
                 <Dropdown.Item onClick={onClickLogout}>{t('My.Exit')}</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-          ) : (
+          ) : hideWalletLogin() ? null : (
             <ConnectButton onClick={showWalletLogin}>{t('menus.connectWallet')}</ConnectButton>
           )}
         </RightBox>

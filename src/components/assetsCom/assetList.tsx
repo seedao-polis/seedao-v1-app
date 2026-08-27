@@ -33,7 +33,7 @@ import ApplyWhite from 'assets/Imgs/dark/apply.svg';
 import RankWhite from 'assets/Imgs/dark/rank.svg';
 import SearchWhite from 'assets/Imgs/light/search.svg';
 import useToast, { ToastType } from 'hooks/useToast';
-import sns from '@seedao2.0/sns-js';
+import sns from 'utils/sns';
 
 import { ethers } from 'ethers';
 import { PlainButton } from 'components/common/button';

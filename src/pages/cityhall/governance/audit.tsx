@@ -28,7 +28,7 @@ import { ContainerPadding } from 'assets/styles/global';
 import ApplicationStatusTag from 'components/common/applicationStatusTagNew';
 import useApplicants from 'hooks/useApplicants';
 import { formatApplicationStatus } from 'utils';
-import sns from '@seedao2.0/sns-js';
+import sns from 'utils/sns';
 
 import { ethers } from 'ethers';
 

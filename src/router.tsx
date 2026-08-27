@@ -51,6 +51,7 @@ import ProposalThreadV2 from 'pages/proposal-v2/thread';
 
 import Wiki from './pages/notion/wiki';
 import getConfig from 'utils/envCofnig';
+import { hideCreateProposal, hideSeeChat, hideSeeUNetwork, disableSbtService, disablePushService } from 'utils/envFlags';
 import SeeSwap from 'pages/seeswap/swap';
 import Credit from 'pages/credit';
 import SnsQuery from "./pages/sns-query";
@@ -81,12 +82,12 @@ export default function RouterLink() {
           <Route path="/user/profile/edit" element={<ProfileEdit />} />
           <Route path="/user/vault" element={<UserVault />} />
 
-          <Route path="/event" element={<Event />} />
+          {!hideSeeUNetwork() && <Route path="/event" element={<Event />} />}
           <Route path="/apps" element={<Apps />} />
           <Route path="/resources" element={<Resources />} />
           {/*<Route path="/resources/detail/:id" element={<ResourcesDetail />} />*/}
-          <Route path="/event/view" element={<EventView />} />
-          <Route path="/event/edit" element={<EventEdit />} />
+          {!hideSeeUNetwork() && <Route path="/event/view" element={<EventView />} />}
+          {!hideSeeUNetwork() && <Route path="/event/edit" element={<EventEdit />} />}
           <Route path="/online-event" element={<CalendarPage />} />
           <Route path="/hub" element={<Pub />} />
           <Route path="/hubDetail/:id" element={<PubDetail />} />
@@ -105,7 +106,7 @@ export default function RouterLink() {
 
           {/* proposal v2 */}
           <Route path="/proposal" element={<ProposalIndexPage />} />
-          <Route path="/proposal/create" element={<CreateProposalPage />} />
+          {!hideCreateProposal() && <Route path="/proposal/create" element={<CreateProposalPage />} />}
           <Route path="/proposal/edit/:id" element={<EditProposalPage />} />
           <Route path="/proposal/thread/:id" element={<ProposalThreadV2 />} />
 
@@ -134,9 +135,9 @@ export default function RouterLink() {
           <Route path="/assistant" element={<Assistant />} />
           <Route path="/node" element={<Node />} />
           <Route path="/search-profile" element={<SearchProfile />} />
-          <Route path="/sbt/list/:type" element={<SbtList />} />
-          <Route path="/sbt/create" element={<SbtCreate />} />
-          <Route path="/sbt/apply" element={<SbtApply />} />
+          {!disableSbtService() && <Route path="/sbt/list/:type" element={<SbtList />} />}
+          {!disableSbtService() && <Route path="/sbt/create" element={<SbtCreate />} />}
+          {!disableSbtService() && <Route path="/sbt/apply" element={<SbtApply />} />}
           <Route path="/archive" element={<Archive />} />
 
 
@@ -149,7 +150,7 @@ export default function RouterLink() {
           <Route path="/wiki" element={<Wiki />} />
           {/* Credit */}
           <Route path="/credit" element={<Credit />} />
-          <Route path="/ai" element={<AiChat />} />
+          {!hideSeeChat() && <Route path="/ai" element={<AiChat />} />}
         </Routes>
       </Layout>
       <RouterChecker />

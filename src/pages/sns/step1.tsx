@@ -11,6 +11,8 @@ import { ethers } from 'ethers';
 import { useSNSContext, ACTIONS } from './snsProvider';
 import { normalize } from '@seedao2.0/sns-namehash';
 import { isAvailable } from '@seedao2.0/sns-safe';
+import { getSnsSafeHost } from 'utils/snsClient';
+import { disableSnsSafeService } from 'utils/envFlags';
 import { builtin } from '@seedao2.0/sns-js';
 import { getRandomCode } from 'utils';
 import useToast, { ToastType } from 'hooks/useToast';
@@ -69,12 +71,14 @@ export default function RegisterSNSStep1() {
     setSearchVal(v);
     try {
       // offchain check
-      const res = await isAvailable(v, builtin.SAFE_HOST);
-      console.log('offline check', v, res);
-      if (!res) {
-        setAvailable(AvailableStatus.NOT_OK);
-        setPending(false);
-        return;
+      if (!disableSnsSafeService()) {
+        const res = await isAvailable(v, getSnsSafeHost());
+        console.log('offline check', v, res);
+        if (!res) {
+          setAvailable(AvailableStatus.NOT_OK);
+          setPending(false);
+          return;
+        }
       }
       // onchain check
       if (!controllerContract) {

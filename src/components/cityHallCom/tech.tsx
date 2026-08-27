@@ -8,6 +8,7 @@ import { AppActionType, useAuthContext } from "../../providers/authProvider";
 import { getCityHallDetail } from "../../requests/cityHall";
 import publicJs from "../../utils/publicJs";
 import useToast, { ToastType } from "../../hooks/useToast";
+import { filterCityHallLinksForEnv } from 'utils/envFlags';
 
 const AppBox = styled(Row)`
   div[class^='col'] {
@@ -52,8 +53,13 @@ export default function TechPanel() {
 
   const lst = useMemo(() => {
     // @ts-ignore
-    return Links.tech.map((item) => ({ ...item, name: t(item.name) as string, desc: t(item.desc) as string,disabled }));
-  }, [t,disabled]);
+    return filterCityHallLinksForEnv(Links.tech).map((item) => ({
+      ...item,
+      name: t(item.name) as string,
+      desc: t(item.desc) as string,
+      disabled,
+    }));
+  }, [t, disabled]);
 
 
   const getDetail = async () => {

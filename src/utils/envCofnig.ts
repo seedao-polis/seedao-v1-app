@@ -84,6 +84,7 @@ const LOCAL = {
   JOY_ID_URL: 'https://testnet.joyid.dev',
   NETWORK: Polygon_Network,
   INDEXER_ENDPOINT: 'https://test-spp-indexer.seedao.tech',
+  SNS_SAFE_HOST: 'https://sns-api.seedao.top',
   SENTRY_DSN: '',
   SBT_BASEURL:"https://test-sbt-api.seedao.tech"
 };
@@ -114,12 +115,13 @@ const PREVIEW = {
     },
   },
   INDEXER_ENDPOINT: 'https://spp-indexer.seedao.top',
+  SNS_SAFE_HOST: 'https://sns-api.seedao.top',
   SBT_BASEURL:"https://preview-sbt-api.seedao.tech"
 };
 
 const PRODUCTION = {
   ...LOCAL,
-  REACT_APP_BASE_ENDPOINT: 'https://api.seedao.top',
+  REACT_APP_BASE_ENDPOINT: 'https://api-v1.seedao.xyz',
   REACT_APP_PUSH_ENDPOINT: 'https://push-api.seedao.tech',
   REACT_APP_JOYID_ENABLE: true,
   REACT_APP_APP_VERSION: `B ${VERSION}`,
@@ -140,6 +142,7 @@ const PRODUCTION = {
   Polygon_Network,
   NETWORK: {
     ...Polygon_Network,
+    rpcs: Polygon_Network.rpcs.filter((rpc) => !rpc.includes('polygon-mainnet.seedao.tech')),
     SCRContract: { address: '0xE4825A1a31a76f72befa47f7160B132AA03813E0', decimals: 18 },
     lend: {
       ...Polygon_Network.lend,
@@ -153,7 +156,8 @@ const PRODUCTION = {
       },
     },
   },
-  INDEXER_ENDPOINT: 'https://spp-indexer.seedao.top',
+  INDEXER_ENDPOINT: 'https://spp-indexer.seedao.xyz',
+  SNS_SAFE_HOST: 'https://sns-api.seedao.top',
   SENTRY_DSN,
   SBT_BASEURL:"https://sbt-api.seedao.tech"
 };

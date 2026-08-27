@@ -1,5 +1,4 @@
 // Apps
-import MetaforoIcon from '../assets/Imgs/home/Metaforo.png';
 import AaanyIcon from '../assets/Imgs/home/AAAny.png';
 import DeschoolIcon from '../assets/Imgs/home/Deschool.png';
 import WikiImg from '../assets/Imgs/home/wiki.png';

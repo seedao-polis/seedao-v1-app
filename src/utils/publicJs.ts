@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
-import sns from "@seedao2.0/sns-js";
+import sns from 'utils/sns';
 import getConfig from "./envCofnig";
 
 const AddressToShow = (address: string, num?: number) => {
@@ -128,36 +128,6 @@ const checkRPCavailable = (rpc_list: string[], network: { chainId: number; name:
   });
 };
 
-function typedData(address: string, chainId: number) {
-  return {
-    types: {
-      EIP712Domain: [
-        { name: 'name', type: 'string' },
-        { name: 'version', type: 'string' },
-        {
-          name: 'chainId',
-          type: 'uint256',
-        },
-      ],
-      Login: [
-        { name: 'account', type: 'address' },
-        { name: 'message', type: 'string' },
-      ],
-    },
-    primaryType: 'Login',
-    domain: {
-      name: 'Metaforo',
-      version: '1.0',
-      chainId: chainId,
-    },
-    message: {
-      account: address,
-      message: 'Login to Metaforo',
-    },
-  };
-}
-
-
 const splitWallets = async(wallets:string[]) =>{
   const chunkSize = 300;
   const result = [];
@@ -180,4 +150,4 @@ const splitWallets = async(wallets:string[]) =>{
   return resultArr;
 }
 
-export default { AddressToShow, getImage, filterTags, checkRPCavailable, getSeedUrl, typedData,splitWallets };
+export default { AddressToShow, getImage, filterTags, checkRPCavailable, getSeedUrl, splitWallets };

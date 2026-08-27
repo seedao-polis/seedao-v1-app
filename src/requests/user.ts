@@ -73,15 +73,11 @@ export const getUsers = (wallets: string[]): Promise<ResponseData<IUser[]>> => {
 
 export const readPermissionUrl = `${BASE_URL}/${API_VERSION}${PATH_PREFIX}/casbin`;
 
-interface IMetaforoResponse {
+interface ISBTAuthResponse {
   token: string;
   wallet: string;
   user_id: number;
 }
-
-export const loginToMetafo = (data: SeeAuth): Promise<{ data: IMetaforoResponse }> => {
-  return axios.post('https://stage.metaforo.io/api/seeAuth?api_key=1', data);
-};
 
 interface IDeschoolResponse {
   jwtToken: string;
@@ -93,6 +89,6 @@ export const loginToDeschool = (data: SeeAuth): Promise<{ data: IDeschoolRespons
 };
 
 
-export const loginToSBT = (data: SeeAuth): Promise<{ data: IMetaforoResponse }> => {
+export const loginToSBT = (data: SeeAuth): Promise<{ data: ISBTAuthResponse }> => {
   return axios.post(`${SBT_BASEURL}/user/seeAuth`, data);
 };

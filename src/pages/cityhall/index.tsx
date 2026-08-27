@@ -12,6 +12,7 @@ import Tabbar from 'components/common/tabbar';
 import { Route, Routes, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useMemo } from 'react';
 import useCurrentSeason from 'hooks/useCurrentSeason';
+import { disablePushService } from 'utils/envFlags';
 import Publicity from "../publicity";
 import CreatePublicity from "../publicity/create";
 import DetailPublicity from "../publicity/detail";
@@ -54,16 +55,19 @@ export default function Index() {
   const currentSeason = useCurrentSeason();
 
   const tabs = useMemo(() => {
-    return canUseCityhall
+    const base = canUseCityhall
       ? [
           { key: SubPage.Members, title: `${currentSeason} ${t('city-hall.Cityhall')}`, path: 'members' },
           { key: SubPage.Governance, title: t('city-hall.Governance'), path: 'governance' },
           { key: SubPage.Brand, title: t('city-hall.Brand'), path: 'brand' },
           { key: SubPage.Tech, title: t('city-hall.Tech'), path: 'tech' },
-          { key: SubPage.Push, title: t('city-hall.Push'), path: 'notification' },
+          ...(disablePushService()
+            ? []
+            : [{ key: SubPage.Push, title: t('city-hall.Push'), path: 'notification' }]),
           { key: SubPage.Publicity, title: t('city-hall.Publicity'), path: 'publicity/list' },
         ]
       : [{ key: SubPage.Members, title: `${currentSeason} ${t('city-hall.Cityhall')}`, path: 'members' }];
+    return base;
   }, [canUseCityhall, t, currentSeason]);
 
   const handleChangeSubPage = (v: number | string) => {
@@ -89,7 +93,7 @@ export default function Index() {
             <Route path="governance" element={<GovernancePage />} />
             <Route path="brand" element={<BrandPanel />} />
             <Route path="tech" element={<TechPanel />} />
-            <Route path="notification" element={<PushPanel />} />
+            {!disablePushService() && <Route path="notification" element={<PushPanel />} />}
             <Route path="publicity" element={<Navigate to="publicity/list" />} />
             <Route path="publicity/list" element={<Publicity />} />
             <Route path="publicity/create" element={<CreatePublicity />} />

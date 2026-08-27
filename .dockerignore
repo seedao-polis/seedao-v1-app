@@ -1,0 +1,32 @@
+# dependencies & build
+node_modules
+build
+coverage
+dist
+
+# git / ide
+.git
+.github
+.cursor
+.vscode
+.idea
+*.md
+!README.md
+
+# env & local
+.env
+.env.local
+.env.*.local
+.env.local.backup
+.DS_Store
+*.pem
+.vercel
+.netlify
+
+# deploy docs / host nginx (image only needs deploy/docker/nginx.conf)
+deploy/README.md
+deploy/nginx
+deploy/pull-and-up.sh
+deploy/docker-compose.yml
+deploy/.env
+deploy/.env.example

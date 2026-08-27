@@ -1,5 +1,5 @@
 import { AppActionType, useAuthContext } from 'providers/authProvider';
-import sns from '@seedao2.0/sns-js';
+import sns from 'utils/sns';
 
 import { ethers } from 'ethers';
 import getConfig from "../utils/envCofnig";

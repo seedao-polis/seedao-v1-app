@@ -86,27 +86,18 @@ export const getUserActivities = (
   size: number,
   session?: string,
 ): Promise<ResponseData<{ records: IActivity[]; session: string }>> => {
-  return request
-    .get('/user/proposal_activities', { size, session })
-    .catch(() => request.get('/user/metaforo_activities', { size, session }));
+  return request.get('/user/proposal_activities', { size, session });
 };
 
 /** @deprecated 使用 getUserActivities */
 export const getUserActions = getUserActivities;
 
 export const saveOrSubmitProposal = (data: CreateProposalParamsType): Promise<ResponseData<IProposal>> => {
-  return request.post(`${PATH_PREFIX}create`, {
-    ...data,
-    // 迁移期兼容尚未改字段名的后端
-    submit_to_metaforo: data.submit,
-  });
+  return request.post(`${PATH_PREFIX}create`, data);
 };
 
 export const updateProposal = (id: number, data: CreateProposalParamsType): Promise<ResponseData<IProposal>> => {
-  return request.post(`${PATH_PREFIX}update/${id}`, {
-    ...data,
-    submit_to_metaforo: data.submit,
-  });
+  return request.post(`${PATH_PREFIX}update/${id}`, data);
 };
 
 export const withdrawProposal = (id: number) => {

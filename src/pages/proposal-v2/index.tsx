@@ -22,6 +22,7 @@ import useWalletAuth from 'hooks/useWalletAuth';
 import MyProposalsTab from 'components/proposalCom/myProposalsTab';
 import useToast, { ToastType } from "../../hooks/useToast";
 import { SEEDAO_USER } from "../../utils/constant";
+import { hideCreateProposal } from 'utils/envFlags';
 
 const PAGE_SIZE = 10;
 let RESULT_ID = 0;
@@ -315,12 +316,14 @@ export default function ProposalIndexPage() {
             {t('Proposal.MyProposals')}
           </HistoryButton>
         </LineBox>
-        <div>
-          <Button variant="primary" onClick={go2create}>
-            <img src={AddImg} alt="" className="mr20" />
-            {t('Proposal.CreateProposal')}
-          </Button>
-        </div>
+        {!hideCreateProposal() && (
+          <div>
+            <Button variant="primary" onClick={go2create}>
+              <img src={AddImg} alt="" className="mr20" />
+              {t('Proposal.CreateProposal')}
+            </Button>
+          </div>
+        )}
       </OperateBox>
       {showContent()}
     </Page>

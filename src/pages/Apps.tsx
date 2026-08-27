@@ -5,6 +5,7 @@ import { Col, Row } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import Links from 'utils/links';
 import AppCard from 'components/common/appCard';
+import { filterAppsForEnv } from 'utils/envFlags';
 
 const OuterBox = styled.div`
   min-height: 100%;
@@ -16,7 +17,11 @@ export default function Apps() {
 
   const events = useMemo(() => {
     // @ts-ignore
-    return Links.apps.map((item) => ({ ...item, name: t(item.name) as string, desc: t(item.desc) as string }));
+    return filterAppsForEnv(Links.apps).map((item) => ({
+      ...item,
+      name: t(item.name) as string,
+      desc: t(item.desc) as string,
+    }));
   }, [t]);
 
   return (

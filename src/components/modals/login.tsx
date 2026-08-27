@@ -23,8 +23,9 @@ import {
   getNonce,
   loginWithSeeAuth,
   readPermissionUrl,
-  loginToSBT
+  loginToSBT,
 } from "requests/user";
+import { disablePushService, disableSbtService } from 'utils/envFlags';
 import { WalletType, Wallet } from 'wallet/wallet';
 import { createSiweMessage } from 'utils/sign';
 import { SELECT_WALLET, SEEDAO_USER_DATA } from 'utils/constant';
@@ -136,19 +137,18 @@ const LoginModalContent = () => {
             domain: window.location.host,
             walletName: getSeeAuthWalletName(selectConnectorId),
           });
-          try {
-            const loginResp:any = await loginToSBT(res.data.see_auth);
-
-            if (loginResp.data) {
-
-              dispatch({
-                type: AppActionType.SET_SBT_TOKEN,
-                payload: loginResp.data.data.token,
-              });
+          if (!disableSbtService()) {
+            try {
+              const loginResp: any = await loginToSBT(res.data.see_auth);
+              if (loginResp.data) {
+                dispatch({
+                  type: AppActionType.SET_SBT_TOKEN,
+                  payload: loginResp.data.data.token,
+                });
+              }
+            } catch (error) {
+              console.error('SBT login error', error);
             }
-
-          } catch (error) {
-            console.error('SBT login error', error);
           }
 
 
@@ -172,11 +172,13 @@ const LoginModalContent = () => {
             type: 'metamask',
             account: 'account:' + address,
           });
-          try {
-            // toLocaleLowerCase for compatibility old data
-            await OneSignal.login(address.toLocaleLowerCase());
-          } catch (error) {
-            logError('OneSignal login error', error);
+          if (!disablePushService()) {
+            try {
+              // toLocaleLowerCase for compatibility old data
+              await OneSignal.login(address.toLocaleLowerCase());
+            } catch (error) {
+              logError('OneSignal login error', error);
+            }
           }
         } catch (error: any) {
           setClickConnectFlag(false);

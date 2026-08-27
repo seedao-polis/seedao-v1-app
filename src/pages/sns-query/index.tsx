@@ -1,7 +1,7 @@
 import BackerNav from "../../components/common/backNav";
 import styled from "styled-components";
 import { ContainerPadding } from "../../assets/styles/global";
-import sns from "@seedao2.0/sns-js";
+import sns from 'utils/sns';
 
 import { Input } from 'antd';
 import { useTranslation } from "react-i18next";

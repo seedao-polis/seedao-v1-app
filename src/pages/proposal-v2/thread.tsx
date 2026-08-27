@@ -52,6 +52,7 @@ import defaultImg from '../../assets/Imgs/defaultAvatar.png';
 import getConfig from "../../utils/envCofnig";
 import { checkCanVote } from "../../requests/proposalV2";
 import { formatApiError } from 'utils/formatApiError';
+import { hidePostComment } from 'utils/envFlags';
 import { applyOptimisticVote, hasUserVoted, markProposalAsVoted, normalizeProposalVotes } from 'utils/proposalVote';
 
 enum BlockContentType {
@@ -785,7 +786,7 @@ export default function ThreadPage() {
                 <ReplyComponent
                   pinId={data?.reject_comment_id ?? data?.reject_metaforo_comment_id}
                   id={Number(id)}
-                  hideReply={review}
+                  hideReply={review || hidePostComment()}
                   posts={posts}
                   ref={replyRef}
                   onNewComment={() => onEditComment(currentCommentArrayIdx)}

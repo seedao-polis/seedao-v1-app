@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from 'lucide-react';
 import { getCityHallDetail } from "../../../requests/cityHall";
 import useToast, { ToastType } from "../../../hooks/useToast";
+import { filterCityHallLinksForEnv } from 'utils/envFlags';
 
 
 const AppBox = styled(Row)`
@@ -116,8 +117,13 @@ export default function GovernancePage() {
 
   const BList = useMemo(() => {
     // @ts-ignore
-    return Links.governanceBtm.map((item) => ({ ...item, name: t(item.name) as string, desc: t(item.desc) as string,disabled }));
-  }, [t,disabled]);
+    return filterCityHallLinksForEnv(Links.governanceBtm).map((item) => ({
+      ...item,
+      name: t(item.name) as string,
+      desc: t(item.desc) as string,
+      disabled,
+    }));
+  }, [t, disabled]);
 
   const ToGo = (url: string,disabled:boolean,item:any) => {
     if(disabled && item.id ==="module-sbt")return;

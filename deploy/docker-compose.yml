@@ -1,0 +1,22 @@
+# Production deploy: pull a pre-built image (from GHCR or Aliyun ACR).
+# Domain: app.seedao.xyz (SeeDAO App SPA)
+#
+# On the server:
+#   cp deploy/.env.example deploy/.env   # set WEB_IMAGE
+#   docker login ghcr.io -u USER -p TOKEN
+#   docker compose -p seedao-v1-app -f deploy/docker-compose.yml --env-file deploy/.env pull
+#   docker compose -p seedao-v1-app -f deploy/docker-compose.yml --env-file deploy/.env up -d
+
+services:
+  web:
+    image: ${WEB_IMAGE:?Set WEB_IMAGE in deploy/.env e.g. ghcr.io/seedao-polis/seedao-v1-app:latest}
+    container_name: seedao-v1-app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${HOST_PORT:-3081}:3000"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
