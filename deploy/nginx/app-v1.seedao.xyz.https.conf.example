@@ -1,20 +1,20 @@
-# HTTPS version — use after certificates exist under /etc/letsencrypt/live/app.seedao.xyz/
-# Prefer: certbot --nginx -d app.seedao.xyz (auto-edits the HTTP conf).
+# HTTPS version — use after certificates exist under /etc/letsencrypt/live/app-v1.seedao.xyz/
+# Prefer: certbot --nginx -d app-v1.seedao.xyz (auto-edits the HTTP conf).
 
 server {
     listen 80;
     listen [::]:80;
-    server_name app.seedao.xyz;
-    return 301 https://app.seedao.xyz$request_uri;
+    server_name app-v1.seedao.xyz;
+    return 301 https://app-v1.seedao.xyz$request_uri;
 }
 
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name app.seedao.xyz;
+    server_name app-v1.seedao.xyz;
 
-    ssl_certificate     /etc/letsencrypt/live/app.seedao.xyz/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/app.seedao.xyz/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/app-v1.seedao.xyz/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/app-v1.seedao.xyz/privkey.pem;
     include             /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
 

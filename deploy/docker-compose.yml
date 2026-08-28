@@ -1,5 +1,5 @@
 # Production deploy: pull a pre-built image (from GHCR or Aliyun ACR).
-# Domain: app.seedao.xyz (SeeDAO App SPA)
+# Domain: app-v1.seedao.xyz (SeeDAO App SPA)
 #
 # On the server:
 #   cp deploy/.env.example deploy/.env   # set WEB_IMAGE

@@ -1,12 +1,12 @@
 # Deploy SeeDAO App (Docker + Nginx)
 
-域名：**`https://app.seedao.xyz`**
+域名：**`https://app-v1.seedao.xyz`**
 
 架构：
 
 ```text
 Browser
-  → app.seedao.xyz (宿主机 Nginx TLS)
+  → app-v1.seedao.xyz (宿主机 Nginx TLS)
        → 127.0.0.1:3081 (Docker 容器 seedao-v1-app，内嵌 Nginx SPA)
 ```
 
@@ -28,7 +28,7 @@ cd /srv/seedao2/seedao-v1-app
 cp deploy/.env.example deploy/.env
 # 编辑 deploy/.env，设置 WEB_IMAGE
 
-sudo cp deploy/nginx/app.seedao.xyz.conf /etc/nginx/conf.d/app.seedao.xyz.conf
+sudo cp deploy/nginx/app-v1.seedao.xyz.conf /etc/nginx/conf.d/app-v1.seedao.xyz.conf
 sudo nginx -t && sudo systemctl reload nginx
 
 echo YOUR_PAT | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
@@ -39,7 +39,7 @@ chmod +x deploy/pull-and-up.sh
 HTTPS：
 
 ```bash
-sudo certbot --nginx -d app.seedao.xyz
+sudo certbot --nginx -d app-v1.seedao.xyz
 ```
 
 ---
@@ -53,7 +53,7 @@ sudo certbot --nginx -d app.seedao.xyz
 | 文件 | 配置 |
 | ---------------------------------------- | ----------------------------------- |
 | `deploy/.env` | `HOST_PORT=3081` |
-| `/etc/nginx/conf.d/app.seedao.xyz.conf` | `proxy_pass http://127.0.0.1:3081;` |
+| `/etc/nginx/conf.d/app-v1.seedao.xyz.conf` | `proxy_pass http://127.0.0.1:3081;` |
 
 ---
 
@@ -76,6 +76,6 @@ git pull
 | `docker-compose.yml` | 拉取并运行镜像 |
 | `.env.example` | `WEB_IMAGE`、`COMPOSE_PROJECT_NAME` 模板 |
 | `pull-and-up.sh` | 一键 pull + up |
-| `nginx/app.seedao.xyz.conf` | 宿主机 HTTP 反代 |
-| `nginx/app.seedao.xyz.https.conf.example` | HTTPS 参考 |
+| `nginx/app-v1.seedao.xyz.conf` | 宿主机 HTTP 反代 |
+| `nginx/app-v1.seedao.xyz.https.conf.example` | HTTPS 参考 |
 | `docker/nginx.conf` | 镜像内 SPA Nginx |
