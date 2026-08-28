@@ -29,7 +29,6 @@ import { getProjects, IProjectPageParams } from "../../requests/project";
 import { ethers } from "ethers";
 import ProjectOrGuildItem from "../../components/projectHome";
 import { getUsers } from "../../requests/user";
-import useQuerySNS from "../../hooks/useQuerySNS";
 import { IUser } from "../../type/user.type";
 import LoadingInner from "../../components/loadingInner";
 
@@ -292,8 +291,6 @@ export default function Home() {
   const navigate = useNavigate();
   const [proList, setProList] = useState<ReTurnProject[]>([]);
 
-  const { getMultiSNS } = useQuerySNS();
-
   const {
     state: { theme, hadOnboarding, sns: userSNS },
     dispatch
@@ -308,7 +305,6 @@ export default function Home() {
       res.data.forEach((r) => {
         userData[(r.wallet || '').toLowerCase()] = r;
       });
-      // setUserMap(userData);
       return userData;
     } catch (error) {
       logError('getUsersInfo error:', error);
@@ -327,13 +323,7 @@ export default function Home() {
       }
     });
     const wallets = Array.from(new Set(_wallets));
-    let rt = await getUsersInfo(wallets);
-    let userSns = await getMultiSNS(wallets);
-
-    return {
-      userMap: rt,
-      userSns,
-    };
+    return getUsersInfo(wallets);
   };
 
   const getproList = async () => {
@@ -352,13 +342,12 @@ export default function Home() {
 
       const { rows, page, size, total } = rt.data;
 
-      let userRT = await getUsersDetail(rows);
-      const { userMap, userSns } = userRT;
+      const userMap = await getUsersDetail(rows);
       rows.map((d: any) => {
         let m = d.sponsors[0];
         if (m) {
-          d.user = userMap ? userMap[m] : {};
-          d.sns = userSns ? userSns.get(m) : '';
+          // sponsors 可能大小写不一致，统一用小写 key 取用户资料
+          d.user = userMap ? userMap[m.toLowerCase()] || userMap[m] : {};
         }
       });
 
