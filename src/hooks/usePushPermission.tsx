@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { disablePushService } from 'utils/envFlags';
 
 const checkNotificationSupport = () => {
   if (!window.Notification) {
@@ -26,9 +27,11 @@ const askPermission = () => {
 
 export default function usePushPermission() {
   const [permission, setPermission] = useState('default');
+  const pushDisabled = disablePushService();
 
   useEffect(() => {
-    if (!checkNotificationSupport()) {
+    // 线上已禁用 Push / OneSignal，不再弹浏览器「显示通知」授权
+    if (pushDisabled || !checkNotificationSupport()) {
       return;
     }
 
@@ -39,9 +42,12 @@ export default function usePushPermission() {
     Notification.requestPermission()
       .then(handlePermission)
       .catch((err) => logError('permission failed', err));
-  }, []);
+  }, [pushDisabled]);
 
   const handlePermission = () => {
+    if (pushDisabled) {
+      return Promise.resolve();
+    }
     if (!checkNotificationSupport()) {
       return Promise.reject('not support navigator');
     }
@@ -55,7 +61,10 @@ export default function usePushPermission() {
       });
   };
 
-  const hasGranted = useMemo(() => permission === 'granted', [permission]);
+  const hasGranted = useMemo(
+    () => pushDisabled || permission === 'granted',
+    [pushDisabled, permission],
+  );
 
   return { handlePermission, hasGranted };
 }

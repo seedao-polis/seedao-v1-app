@@ -22,7 +22,6 @@ import { types } from 'sass';
 import {BookMarked} from "lucide-react";
 import { getPublicity } from "../../requests/publicity";
 import { formatTime } from "../../utils/time";
-import useToast, { ToastType } from "../../hooks/useToast";
 import { getNodeSBT } from "../../requests/publicData";
 import { getCityHallNode } from "../../requests/cityHall";
 import { ReTurnProject } from "../../type/project.type";
@@ -290,7 +289,6 @@ export default function Home() {
   const [onNewHolders, setNewHolders] = useState(0);
   const [list,setList] = useState([]);
   const [sbtHolders,setSbtHolders] = useState(0);
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const [proList, setProList] = useState<ReTurnProject[]>([]);
 
@@ -493,8 +491,8 @@ export default function Home() {
       const {data:{rows}} = rt;
       setList(rows)
     }catch(error:any){
-      showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
-      console.error(error)
+      // 公告列表失败不阻塞首页；避免弹出 undefined:ERR_BAD_REQUEST
+      console.error('[home] getPublicity failed', error)
     }
   }
 

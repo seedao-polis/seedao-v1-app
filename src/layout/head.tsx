@@ -198,7 +198,8 @@ export default function Header() {
   ];
 
   const showWalletLogin = async () => {
-    if (!hasGranted) {
+    // 线上禁用推送时，登录前不再请求通知权限
+    if (!disablePushService() && !hasGranted) {
       handlePermission().finally(() => {
         dispatch({ type: AppActionType.SET_LOGIN_MODAL, payload: true });
       });
