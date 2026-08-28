@@ -5,7 +5,7 @@ import getConfig from 'utils/envCofnig';
 
 export const BASE_URL = getConfig().REACT_APP_BASE_ENDPOINT;
 
-export const API_VERSION = process.env.REACT_APP_API_VERSION;
+export const API_VERSION = process.env.REACT_APP_API_VERSION || 'v1';
 
 const instance = axios.create({
   baseURL: `${BASE_URL}/${API_VERSION}`,

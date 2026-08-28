@@ -2,11 +2,11 @@ import axios from 'axios';
 import { SEEDAO_USER } from 'utils/constant';
 import { parseToken } from 'utils/auth';
 import { isMobile } from 'utils/userAgent';
-import request, { ResponseData } from './http';
+import request, { API_VERSION, ResponseData } from './http';
 import { IPush } from 'type/push.type';
 import getConfig from 'utils/envCofnig';
 
-const PUSH_BASE_PATH = `${getConfig().REACT_APP_PUSH_ENDPOINT}/${process.env.REACT_APP_API_VERSION}`;
+const PUSH_BASE_PATH = `${getConfig().REACT_APP_PUSH_ENDPOINT}/${API_VERSION}`;
 const PATH_PREFIX = '/push/';
 
 type deviceType = 'pc' | 'mobile';

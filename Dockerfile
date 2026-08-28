@@ -19,6 +19,7 @@ RUN npm ci --ignore-scripts
 COPY . .
 RUN node scripts/link-react-google-calendar-locale.js
 ENV REACT_APP_ENV_VERSION=prod
+ENV REACT_APP_API_VERSION=v1
 RUN npm run build:online
 
 FROM nginx:1.27-alpine AS runner
