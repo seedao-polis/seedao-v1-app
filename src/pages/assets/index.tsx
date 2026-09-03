@@ -226,7 +226,6 @@ export default function Index() {
       });
     } catch (error:any) {
       logError('getTreasury error', error);
-      showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
     }
   };
   useEffect(() => {
@@ -265,7 +264,6 @@ export default function Index() {
         });
       })
       .catch((error:any) => {
-        showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
         logError('getFloorPrice error', error);
       });
   };
@@ -296,7 +294,6 @@ export default function Index() {
       setTotalSCR(Number(ethers.utils.formatEther(supply)).format());
     } catch (error:any) {
       logError('getSCR error', error);
-      showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
     }
   };
 

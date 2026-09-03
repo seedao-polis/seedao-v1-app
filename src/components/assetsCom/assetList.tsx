@@ -20,23 +20,19 @@ import useSeasons from 'hooks/useSeasons';
 import useQuerySNS from 'hooks/useQuerySNS';
 import useBudgetSource from 'hooks/useBudgetSource';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import getConfig from 'utils/envCofnig';
 import useAssets from 'hooks/useAssets';
 
 import RecordImg from 'assets/Imgs/light/record.svg';
-import ApplyImg from 'assets/Imgs/light/apply.svg';
 import RankImg from 'assets/Imgs/light/rank.svg';
 import SearchImg from 'assets/Imgs/light/search.svg';
 
 import RecordWhite from 'assets/Imgs/dark/record.svg';
-import ApplyWhite from 'assets/Imgs/dark/apply.svg';
 import RankWhite from 'assets/Imgs/dark/rank.svg';
 import SearchWhite from 'assets/Imgs/light/search.svg';
 import useToast, { ToastType } from 'hooks/useToast';
 import sns from 'utils/sns';
 
 import { ethers } from 'ethers';
-import { PlainButton } from 'components/common/button';
 import ClearSVGIcon from 'components/svgs/clear';
 
 const Colgroups = () => {
@@ -385,18 +381,11 @@ export default function AssetList() {
     searchContentVal,
   ]);
 
-  const handleExport = async () => {
-    window.open(requests.application.getExportFileUrlFromVault(getQuerydata()), '_blank');
-  };
-
   const formatSNS = (wallet: string) => {
     const name = snsMap.get(wallet) || wallet;
     return name?.endsWith('.seedao') ? name : publicJs.AddressToShow(name, 4);
   };
 
-  const openApply = () => {
-    navigate('/assets/register', { state: '/assets' });
-  };
   const openRank = () => {
     navigate('/ranking', { state: '/assets' });
   };
@@ -412,12 +401,6 @@ export default function AssetList() {
             <img src={theme ? RecordWhite : RecordImg} alt="" />
           </dt>
           <dd>{t('Assets.record')}</dd>
-        </dl>
-        <dl onClick={() => openApply()}>
-          <dt>
-            <img src={theme ? ApplyWhite : ApplyImg} alt="" />
-          </dt>
-          <dd>{t('Assets.Apply')}</dd>
         </dl>
         <dl onClick={() => openRank()}>
           <dt>
@@ -521,11 +504,7 @@ export default function AssetList() {
                   }}
                 />
               </td>
-              <td>
-                {getConfig().REACT_APP_ENV !== 'prod' && getConfig().REACT_APP_ENV !== 'preview' && (
-                  <PlainButton onClick={handleExport}>{t('Assets.Export')}</PlainButton>
-                )}
-              </td>
+              <td />
             </tr>
           </tbody>
         </Table>
@@ -615,12 +594,4 @@ const MoreButton = styled.div`
   cursor: pointer;
   border: 1px solid var(--bs-border-color);
   font-size: 14px;
-`;
-
-const ExportButton = styled(MoreButton)`
-  width: 100%;
-  height: 40px;
-  line-height: 40px;
-  font-family: 'Poppins-SemiBold';
-  text-align: center;
 `;

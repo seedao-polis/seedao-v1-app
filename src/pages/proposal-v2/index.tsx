@@ -13,7 +13,6 @@ import { useAuthContext, AppActionType } from 'providers/authProvider';
 import { ISimpleProposal, ProposalState } from 'type/proposalV2.type';
 import useProposalCategories from 'hooks/useProposalCategories';
 import NoItem from 'components/noItem';
-import useQuerySNS from 'hooks/useQuerySNS';
 import publicJs from 'utils/publicJs';
 import Pagination from 'components/pagination';
 import SearchImg from '../../assets/Imgs/proposal/search.svg';
@@ -78,11 +77,8 @@ export default function ProposalIndexPage() {
   const secondTab = state?.currentTab?.[1];
 
   const { ensureWalletLogin, isLogin } = useWalletAuth();
-  const { getMultiSNS } = useQuerySNS();
 
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [snsMap, setSnsMap] = useState<Map<string, string>>(new Map());
 
   const keyword_addr = searchParams.get('q');
   const sort_field_addr = searchParams.get('sort_field');
@@ -112,19 +108,8 @@ export default function ProposalIndexPage() {
     setSearchKeyword(keyword_addr ?? '');
   }, [keyword_addr, sort_field_addr, sip_addr, sort_order_addr, page_addr, category_id]);
 
-  const handleSNS = async (wallets: string[]) => {
-    try{
-      const sns_map = await getMultiSNS(wallets);
-      setSnsMap(sns_map);
-    }catch(error:any){
-      showToast(`${error?.data?.code}:${error?.data?.msg || error?.code || error}`, ToastType.Danger);
-    }
-
-  };
-
   const formatSNS = (wallet: string) => {
-    const name = snsMap.get(wallet) || wallet;
-    return name?.endsWith('.seedao') ? name : publicJs.AddressToShow(name, 4);
+    return publicJs.AddressToShow(wallet, 4);
   };
 
   const getProposalList = async (_page: number = 1) => {
@@ -144,7 +129,6 @@ export default function ProposalIndexPage() {
       });
       if (rid !== RESULT_ID) return;
       setProposalList(resp.data.rows);
-      handleSNS(resp.data.rows.filter((d) => !!d.applicant).map((d) => d.applicant));
       setTotalCount(resp.data.total);
     } catch (error:any) {
       logError('getAllProposals failed', error);
