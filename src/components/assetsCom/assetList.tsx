@@ -20,6 +20,7 @@ import useSeasons from 'hooks/useSeasons';
 import useQuerySNS from 'hooks/useQuerySNS';
 import useBudgetSource from 'hooks/useBudgetSource';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import getConfig from 'utils/envCofnig';
 import useAssets from 'hooks/useAssets';
 
 import RecordImg from 'assets/Imgs/light/record.svg';
